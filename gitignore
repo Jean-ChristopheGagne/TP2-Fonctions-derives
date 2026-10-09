@@ -1,0 +1,53 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environnements virtuels
+venv/
+.venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+pip-wheel-metadata/
+
+# Tests / couverture / caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+
+# ---------- PyCharm / JetBrains ----------
+.idea/
+*.iml
+*.iws
+out/
+
+# Qt Creator / Designer
+*.pro.user
+*.pro.user.*
+*.autosave
+*.qm
+
+# ---------- PyInstaller ----------
+*.spec
+# (retirez cette ligne si vous versionnez votre fichier .spec)
+
+# ---------- Divers ----------
+.env
+*.log
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
