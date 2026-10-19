@@ -4,7 +4,6 @@ import numpy as np
 
 from fonction import Fonction
 
-
 class Canvas(FigureCanvasQTAgg):
 
     __fig : plt.subplots
@@ -22,4 +21,23 @@ class Canvas(FigureCanvasQTAgg):
         self.__model = model
 
     def dessiner(self):
-        pass
+            self.__ax.clear()  # Efface les anciens axes
+
+            # 3. Génération des points x pour l'évaluation
+            if self.__model.fonction:
+                x = np.linspace(-10, 10, 500)
+                y = self.__model.fonction(x)
+
+                # Gestion du cas où f(x) est une constante
+                if isinstance(y, (int, float, np.number)):
+                    y = np.full_like(x, y)
+
+                self.__ax.plot(x, y, color=self.__model.couleur)
+
+            # # Configuration des options visuelles (grille et titre)
+            # self.__ax.grid(self.__model.showGrille)
+            # if self.__model.titre:
+            #     self.__ax.set_title(self.__model.titre)
+
+            # Rafraîchissement du canvas Qt
+            self.draw()

@@ -1,5 +1,5 @@
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QPushButton, QLineEdit, QMainWindow, QCheckBox, QColorDialog, QVBoxLayout
+from PyQt6.QtWidgets import QLineEdit, QMainWindow, QColorDialog, QVBoxLayout
 from PyQt6.uic import loadUi
 
 from canvas import Canvas
@@ -11,14 +11,11 @@ class FenetrePrincipale:
     __model : Fonction
     matplotlibVLayout : QVBoxLayout
     fonctionLineEdit : QLineEdit
-    titreLineEdit : QLineEdit
-    afficherGrilleCheckBox : QCheckBox
-    dessinerPushButtton : QPushButton
     actionCouleur : QAction
 
     def __init__(self):
         super().__init__()
-        loadUi("ui/exercice2.ui", self)
+        loadUi("ui/tp2derivee.ui", self)
 
         # instance du model
         self.__model = Fonction()

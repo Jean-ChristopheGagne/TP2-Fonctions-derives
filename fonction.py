@@ -5,16 +5,16 @@ class Fonction :
 
     __fonction: Expr
     __couleur: str
-    __titre: str
-    __showGrille: bool
+    # __titre: str
+    # __showGrille: bool
     __x: Expr
 
     def __init__(self):
         super().__init__()
         self.__x = sp.symbols("x")
         self.__fonction = None
-        self.__showGrille = False
-        self.__titre = None
+        #self.__showGrille = False
+        #self.__titre = None
         self.__couleur = None
 
     @property
@@ -27,21 +27,21 @@ class Fonction :
             fonction = sp.sympify(value)
             self.__fonction = sp.lambdify(self.variable, fonction, 'numpy')
 
-    @property
-    def titre(self):
-        return self.__titre
+    # @property
+    # def titre(self):
+    #     return self.__titre
+    #
+    # @titre.setter
+    # def titre(self, value):
+    #     self.__titre = value
 
-    @titre.setter
-    def titre(self, value):
-        self.__titre = value
+    # @property
+    # def showGrille(self):
+    #     return self.__showGrille
 
-    @property
-    def showGrille(self):
-        return self.__showGrille
-
-    @showGrille.setter
-    def showGrille(self, value):
-        self.__showGrille = value
+    # @showGrille.setter
+    # def showGrille(self, value):
+    #     self.__showGrille = value
 
     @property
     def couleur(self):
