@@ -1,7 +1,10 @@
+import sympy as sp
+from sympy import Expr, Symbol
+
 class Fonction :
 
     __fonction: Expr
-    __couleur: None
+    __couleur: str
     __titre: str
     __showGrille: bool
     __x: Expr
