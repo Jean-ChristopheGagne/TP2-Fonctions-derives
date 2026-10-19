@@ -1,5 +1,5 @@
 import sympy as sp
-from sympy import Expr, Symbol
+from sympy import Expr
 
 class Fonction :
 
@@ -56,4 +56,9 @@ class Fonction :
         return self.__x
 
     def valider_fonction(self, f_str) -> bool:
-        pass
+        try:
+            expr = sp.sympify(f_str)
+            symbols = expr.free_symbols
+            return symbols.issubset({self.variable})
+        except (sp.SympifyError, TypeError):
+            return False
