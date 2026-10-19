@@ -1,17 +1,23 @@
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QLineEdit, QMainWindow, QColorDialog, QVBoxLayout
+from PyQt6.QtWidgets import QLineEdit, QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel
 from PyQt6.uic import loadUi
 
 from canvas import Canvas
 from fonction import Fonction
 
 
-class FenetrePrincipale:
+class FenetrePrincipale(QMainWindow):
 
     __model : Fonction
     matplotlibVLayout : QVBoxLayout
-    fonctionLineEdit : QLineEdit
+    fonctionEdit : QLineEdit
     actionCouleur : QAction
+    labelTangeance: QLabel
+    labelDerivee: QLabel
+    labelVariation: QLabel
+    __Xmin: QDoubleSpinBox
+    __Xmax: QDoubleSpinBox
+
 
     def __init__(self):
         super().__init__()
@@ -24,7 +30,7 @@ class FenetrePrincipale:
         self.matplotlibVLayout.addWidget(Canvas(self.__model))
 
         # connection du lineEdit de la fonction
-        self.fonctionLineEdit.editingFinished.connect(lambda : self.__model.fonction(self.fonctionLineEdit.text))
+        self.fonctionEdit.editingFinished.connect(lambda : self.__model.fonction(self.fonctionEdit.text))
 
     @property
     def model(self):

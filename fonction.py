@@ -1,7 +1,8 @@
 import sympy as sp
+from PyQt6.QtCore import QObject
 from sympy import Expr
 
-class Fonction :
+class Fonction(QObject):
 
     __fonction: Expr
     __couleur: str

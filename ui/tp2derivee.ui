@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1124</width>
-    <height>877</height>
+    <width>737</width>
+    <height>667</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,6 @@
    <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1,0">
     <item>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="4">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-      </item>
       <item row="1" column="3">
        <widget class="QLabel" name="label_6">
         <property name="text">
@@ -27,25 +24,18 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="Xmin"/>
+      </item>
+      <item row="1" column="4">
+       <widget class="QDoubleSpinBox" name="Xmax"/>
+      </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>fonction:</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>x minimum:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
-      </item>
-      <item row="0" column="1" colspan="4">
-       <widget class="QComboBox" name="comboBox"/>
       </item>
       <item row="1" column="2">
        <spacer name="horizontalSpacer">
@@ -60,10 +50,20 @@
         </property>
        </spacer>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>x minimum:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="4">
+       <widget class="QLineEdit" name="fonctionEdit"/>
+      </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="canvas"/>
+     <layout class="QVBoxLayout" name="matplotlibVLayout"/>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -148,12 +148,24 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1124</width>
+     <width>737</width>
      <height>33</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Setting</string>
+    </property>
+    <addaction name="actionCouleur"/>
+   </widget>
+   <addaction name="menuSetting"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionCouleur">
+   <property name="text">
+    <string>Couleur</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
