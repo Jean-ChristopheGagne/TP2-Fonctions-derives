@@ -5,17 +5,17 @@ from sympy import Expr
 class Fonction(QObject):
 
     __fonction: Expr
+    __fonctionDerivee: Expr
+    __Xmin: Expr
+    __Xmax: Expr
     __couleur: str
-    # __titre: str
-    # __showGrille: bool
     __x: Expr
 
     def __init__(self):
         super().__init__()
         self.__x = sp.symbols("x")
         self.__fonction = None
-        #self.__showGrille = False
-        #self.__titre = None
+        self.__fonctionDerivee = None
         self.__couleur = None
 
     @property
@@ -27,6 +27,16 @@ class Fonction(QObject):
         if self.valider_fonction(value):
             fonction = sp.sympify(value)
             self.__fonction = sp.lambdify(self.variable, fonction, 'numpy')
+
+    @property
+    def functionDerivee(self):
+        return self.__fonctionDerivee
+
+    @functionDerivee.setter
+    def functionDerivee(self, value: str):
+        if self.valider_fonction(value):
+            fonction = sp.sympify(value)
+            self.__fonctionDerivee = sp.lambdify(self.variable, fonction, 'numpy')
 
     # @property
     # def titre(self):
