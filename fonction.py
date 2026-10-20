@@ -2,10 +2,12 @@ import sympy as sp
 from PyQt6.QtCore import QObject
 from sympy import Expr
 
+from fonction_derivee import FonctionDerivee
+
 class Fonction(QObject):
 
-    __fonction: Expr
-    __fonctionDerivee: Expr
+    __expr_fonction: Expr
+    __fonctionDerivee: FonctionDerivee
     __Xmin: Expr
     __Xmax: Expr
     __couleur: str
@@ -14,19 +16,19 @@ class Fonction(QObject):
     def __init__(self):
         super().__init__()
         self.__x = sp.symbols("x")
-        self.__fonction = None
+        self.__expr_fonction = None
         self.__fonctionDerivee = None
         self.__couleur = None
 
     @property
     def fonction(self):
-        return self.__fonction
+        return self.__expr_fonction
 
     @fonction.setter
     def fonction(self, value: str):
         if self.valider_fonction(value):
             fonction = sp.sympify(value)
-            self.__fonction = sp.lambdify(self.variable, fonction, 'numpy')
+            self.__expr_fonction = sp.lambdify(self.variable, fonction, 'numpy')
 
     @property
     def functionDerivee(self):

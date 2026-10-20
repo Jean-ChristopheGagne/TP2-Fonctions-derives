@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from fonction import Fonction
-from fonction import FonctionDerivee
+from fonction_derivee import FonctionDerivee
 
 class Canvas(FigureCanvasQTAgg):
 
@@ -12,9 +12,9 @@ class Canvas(FigureCanvasQTAgg):
     __ax1 : plt.subplots
     __ax2: plt.subplots
     __model : Fonction
-    __modelDerivee : FonctionDerivee
+    __model_derivee : FonctionDerivee
 
-    def __init__(self, model : Fonction, modelDerivee: FonctionDerivee):
+    def __init__(self, model : Fonction, model_derivee : FonctionDerivee):
         # création d'une figure matplotlib
         self.__fig1, self.__ax1 = plt.subplots()
         self.__fig2, self.__ax2 = plt.subplots()
@@ -24,7 +24,7 @@ class Canvas(FigureCanvasQTAgg):
 
         # garder la reférence sur le model
         self.__model = model
-        self.__modelDerivee = modelDerivee
+        self.__model_derivee = model_derivee
 
     def dessiner(self):                                          #####         À ne pas oublier: Faire dessiner la dérivé
             self.__ax1.clear()  # Efface les anciens axes
