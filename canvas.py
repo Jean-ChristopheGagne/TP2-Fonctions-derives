@@ -3,12 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from fonction import Fonction
-from fonction_derivee import FonctionDerivee
 
 class Canvas(FigureCanvasQTAgg):
 
-    __fig : plt.subplots
-    __ax : plt.subplots
+    __fig : plt.Figure
+    # __ax : plt.Axes
     __model : Fonction
 
     def __init__(self, model : Fonction):
@@ -20,8 +19,10 @@ class Canvas(FigureCanvasQTAgg):
 
         # garder la reférence sur le model
         self.__model = model
+        self.dessiner()
 
     def dessiner(self):
+            print("toto")
             self.__ax[0].clear()
             self.__ax[1].clear()                                   # Efface les anciens axes
 
@@ -34,19 +35,21 @@ class Canvas(FigureCanvasQTAgg):
                 if isinstance(y, (int, float, np.number)):
                     y = np.full_like(x, y)
 
-                self.__ax1.plot(x, y, color=self.__model.couleur)
+                self.__ax[0].plot(x, y, color=self.__model.couleur)
+                self.__ax[1].plot(x, y, color=self.__model.couleur)
 
 
             # Configuration des options visuelles(couleurs)
-            self.__ax[0].plot(self.__model.couleur)
-            self.__ax[1].plot(self.__model.couleur)
+            # self.__ax[0].plot(self.__model.couleur)
+            # self.__ax[1].plot(self.__model.couleur)
 
             # Configuration des titres
             self.__ax[0].set_title("Fonction originale")
             self.__ax[1].set_title("Fonction dérivée")
 
             #Affichage de la grille
-            plt.grid(True)
+            self.__ax[0].grid(True)
+            self.__ax[1].grid(True)
 
             # Rafraîchissement du canvas Qt
             self.draw()
