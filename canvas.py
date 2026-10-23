@@ -7,12 +7,9 @@ from fonction_derivee import FonctionDerivee
 
 class Canvas(FigureCanvasQTAgg):
 
-    __fig1 : plt.subplots
-    __fig2 : plt.subplots
-    __ax1 : plt.subplots
-    __ax2: plt.subplots
+    __fig : plt.subplots
+    __ax : plt.subplots
     __model : Fonction
-    __model_derivee : FonctionDerivee
 
     def __init__(self, model : Fonction):
         # création d'une figure matplotlib
@@ -40,12 +37,16 @@ class Canvas(FigureCanvasQTAgg):
                 self.__ax1.plot(x, y, color=self.__model.couleur)
 
 
-            # Configuration des options visuelles (titre)
+            # Configuration des options visuelles(couleurs)
             self.__ax[0].plot(self.__model.couleur)
             self.__ax[1].plot(self.__model.couleur)
 
+            # Configuration des titres
             self.__ax[0].set_title("Fonction originale")
             self.__ax[1].set_title("Fonction dérivée")
+
+            #Affichage de la grille
+            plt.grid(True)
 
             # Rafraîchissement du canvas Qt
             self.draw()
