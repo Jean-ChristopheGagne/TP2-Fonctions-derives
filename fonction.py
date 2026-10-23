@@ -31,11 +31,11 @@ class Fonction(QObject):
             self.__expr_fonction = sp.lambdify(self.variable, fonction, 'numpy')
 
     @property
-    def functionDerivee(self):
+    def function_derivee(self):
         return self.__fonctionDerivee
 
-    @functionDerivee.setter
-    def functionDerivee(self, value: str):
+    @function_derivee.setter
+    def function_derivee(self, value: str):
         if self.valider_fonction(value):
             fonction = sp.sympify(value)
             self.__fonctionDerivee = sp.lambdify(self.variable, fonction, 'numpy')
