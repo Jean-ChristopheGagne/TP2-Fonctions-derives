@@ -1,77 +1,64 @@
+from abc import ABC
 import sympy as sp
 from PyQt6.QtCore import QObject
 from sympy import Expr
+import matplotlib.colors as mcolors
 
-from fonction_derivee import FonctionDerivee
+class Fonction(ABC, QObject):
 
-class Fonction(QObject):
+    _fonction : Expr
+    _x_min : float
+    _x_max : float
+    _couleur : str
+    _x : Expr
 
-    __expr_fonction: Expr
-    __fonctionDerivee: FonctionDerivee
-    __Xmin: Expr
-    __Xmax: Expr
-    __couleur: str
-    __x: Expr
-
-    def __init__(self):
+    def __init__(self, fonction : Expr, couleur : str, x_min : float, x_max : float):
         super().__init__()
-        self.__x = sp.symbols("x")
-        self.__expr_fonction = None
-        self.__fonctionDerivee = None
-        self.__couleur = None
+        self._x = sp.symbols("x")
+        self._fonction = fonction
+        self._x_min = x_min
+        self._x_max = x_max
+        self.couleur = couleur
 
     @property
     def fonction(self):
-        return self.__expr_fonction
+        return self._fonction
 
     @fonction.setter
-    def fonction(self, value: str):
-        if self.valider_fonction(value):
-            fonction = sp.sympify(value)
-            self.__expr_fonction = sp.lambdify(self.variable, fonction, 'numpy')
-
-    @property
-    def functionDerivee(self):
-        return self.__fonctionDerivee
-
-    @functionDerivee.setter
-    def functionDerivee(self, value: str):
-        if self.valider_fonction(value):
-            fonction = sp.sympify(value)
-            self.__fonctionDerivee = sp.lambdify(self.variable, fonction, 'numpy')
-
-    # @property
-    # def titre(self):
-    #     return self.__titre
-    #
-    # @titre.setter
-    # def titre(self, value):
-    #     self.__titre = value
-
-    # @property
-    # def showGrille(self):
-    #     return self.__showGrille
-
-    # @showGrille.setter
-    # def showGrille(self, value):
-    #     self.__showGrille = value
+    def fonction(self, value : Expr):
+        self._fonction = value
 
     @property
     def couleur(self):
         return self.__couleur
 
     @couleur.setter
-    def couleur(self, value):
-        self.__couleur = value
+    def couleur(self, value : str):
+        if Fonction.valider_couleur(value) :
+            self.__couleur = value
+        else :
+            raise ValueError("Couleur impossible")
 
     @property
-    def variable(self):
-        return self.__x
+    def x(self):
+        return self._x
 
-    def valider_fonction(self, f_str) -> bool:
-        try:
-            expr = sp.sympify(f_str)
-            symbols = expr.free_symbols
-            return symbols.issubset({self.variable})
-        except (sp.SympifyError, TypeError):
-            return False
+    @property
+    def x_min(self):
+        return self._x_min
+
+    @x_min.setter
+    def x_min(self, value : float):
+        self._x_min = value
+
+    @property
+    def x_max(self):
+        return self._x_max
+
+    @x_max.setter
+    def x_max(self, value : float):
+        self._x_max = value
+
+    @staticmethod
+    def valider_couleur(couleur : str) -> bool:
+        return mcolors.is_color_like(couleur)
