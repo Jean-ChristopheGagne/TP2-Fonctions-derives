@@ -1,5 +1,6 @@
 import sympy as sp
 from PyQt6.QtCore import QObject
+from PyQt6.QtWidgets import QColorDialog
 from sympy import Expr
 
 class Fonction(QObject):
@@ -7,14 +8,14 @@ class Fonction(QObject):
     __expr_fonction: Expr
     __Xmin: Expr
     __Xmax: Expr
-    __couleur: str
+    __couleur: QColorDialog
     __x: Expr
 
     def __init__(self):
         super().__init__()
         self.__x = sp.symbols("x")
         self.__expr_fonction = None
-        self.__couleur = None
+        self.__couleur = couleur
 
     @property
     def fonction(self):
@@ -57,8 +58,8 @@ class Fonction(QObject):
         return self.__couleur
 
     @couleur.setter
-    def couleur(self, value):
-        self.__couleur = value
+    def couleur(self, setter_couleur):
+        self.__couleur = setter_couleur
 
     @property
     def variable(self):
@@ -71,3 +72,7 @@ class Fonction(QObject):
             return symbols.issubset({self.variable})
         except (sp.SympifyError, TypeError):
             return False
+    def setter_couleur(self):
+        couleur = QColorDialog.getColor()
+        if couleur.isValid():
+            print(couleur.name())  # Affiche la couleur en format hexadécimal

@@ -7,7 +7,6 @@ from fonction import Fonction
 class Canvas(FigureCanvasQTAgg):
 
     __fig : plt.Figure
-    # __ax : plt.Axes
     __model : Fonction
 
     def __init__(self, model : Fonction):
