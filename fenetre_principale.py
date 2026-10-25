@@ -25,10 +25,7 @@ class FenetrePrincipale(QMainWindow):
         loadUi("ui/tp2derivee.ui", self)
 
         # instance du model
-        self.__model = Fonction(None, "blue", 10.0, 10.0)
-
-        # création du canvas et ajout au layout
-        self.matplotlibVLayout.addWidget(Canvas(self.__model))
+        self.__model = Fonction(None, "blue", 0.0, 10.0)
 
         # création et stockage du canvas dans un attribut self.__canvas
         self.__canvas = Canvas(self.__model)

@@ -21,11 +21,10 @@ class Canvas(FigureCanvasQTAgg):
         self.dessiner()
 
     def dessiner(self):
-            print("toto")
             self.__ax[0].clear()
             self.__ax[1].clear()                                   # Efface les anciens axes
 
-            # 3. Génération des points x pour l'évaluation
+            #Génération des points x pour l'évaluation
             if self.__model.fonction:
                 x = np.linspace(self.__model.x_min, self.__model.x_max, 500)
                 y = self.__model.fonction(x)
@@ -36,6 +35,10 @@ class Canvas(FigureCanvasQTAgg):
 
                 self.__ax[0].plot(x, y, color=self.__model.couleur)
                 self.__ax[1].plot(x, y, color=self.__model.couleur)
+
+            #Appliquer explicitement les bornes de l'axe x sur les graphiques
+            self.__ax[0].set_xlim(self.__model.x_min, self.__model.x_max)
+            self.__ax[1].set_xlim(self.__model.x_min, self.__model.x_max)
 
 
             # Configuration des options visuelles(couleurs)
