@@ -1,3 +1,4 @@
+import scipy as sp
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QLineEdit, QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog
 from PyQt6.uic import loadUi
@@ -31,8 +32,8 @@ class FenetrePrincipale(QMainWindow):
         self.__canvas = Canvas(self.__model)
         self.matplotlibVLayout.addWidget(self.__canvas)
 
-        # connection du lineEdit de la fonction
-        self.fonctionEdit.editingFinished.connect(lambda : self.__model.fonction(self.fonctionEdit.text))
+        # Connexion du lineEdit de la fonction à la méthode dédiée
+        self.fonctionEdit.editingFinished.connect(self.changement_fonction)
 
         # Connexion de l'action du menu au changement de couleur
         self.actionCouleur.triggered.connect(self.changement_couleur)
@@ -52,11 +53,37 @@ class FenetrePrincipale(QMainWindow):
             self.__canvas.dessiner()  # Redessine le graphique avec la nouvelle couleur
 
     def changement_Xmin(self, valeur: float):
-        """Met à jour Xmin dans le modèle et redessine le graphique."""
+        """Met à jour Xmin et force le maximum de SpinXmax à rester supérieur."""
+        # Empêche le SpinXmax de descendre en dessous ou égal à la nouvelle valeur de Xmin
+        self.SpinXmax.setMinimum(valeur + 0.1)
+
         self.__model.x_min = valeur
         self.__canvas.dessiner()
 
     def changement_Xmax(self, valeur: float):
-        """Met à jour Xmax dans le modèle et redessine le graphique."""
+        """Met à jour Xmax et force le minimum de SpinXmin à rester inférieur."""
+        # Empêche le SpinXmin de monter au-dessus ou égal à la nouvelle valeur de Xmax
+        self.SpinXmin.setMaximum(valeur - 0.1)
+
         self.__model.x_max = valeur
         self.__canvas.dessiner()
+
+    def changement_fonction(self):
+        """Récupère le texte de l'input, le convertit en SymPy et redessine."""
+        texte = self.fonctionEdit.text()
+        try:
+            if texte.strip() == "":
+                self.__model.fonction = None
+            else:
+                # Convertit la chaîne de caractères en expression mathématique SymPy
+                self.__model.fonction = sp.sympify(texte)
+
+            # Si la conversion réussit : on réinitialise le style (fond normal)
+            self.fonctionEdit.setStyleSheet("")
+
+            # Redessine le canvas avec la nouvelle fonction
+            self.__canvas.dessiner()
+        except Exception as e:
+            # Si une erreur survient (expression invalide) : on met le fond en rouge clair
+            self.fonctionEdit.setStyleSheet("background-color: #ffcccc;")
+            print(f"Erreur dans l'expression de la fonction : {e}")
