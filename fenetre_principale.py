@@ -15,9 +15,9 @@ class FenetrePrincipale(QMainWindow):
     labelTangeance: QLabel
     labelDerivee: QLabel
     labelVariation: QLabel
-    __Xmin: QDoubleSpinBox
-    __Xmax: QDoubleSpinBox
-    __couleur: QColorDialog
+    SpinXmin : QDoubleSpinBox
+    SpinXmax : QDoubleSpinBox
+    _couleur: QColorDialog
 
 
     def __init__(self):
@@ -25,10 +25,14 @@ class FenetrePrincipale(QMainWindow):
         loadUi("ui/tp2derivee.ui", self)
 
         # instance du model
-        self.__model = Fonction()
+        self.__model = Fonction(None, "blue", 10.0, 10.0)
 
         # création du canvas et ajout au layout
         self.matplotlibVLayout.addWidget(Canvas(self.__model))
+
+        # création et stockage du canvas dans un attribut self.__canvas
+        self.__canvas = Canvas(self.__model)
+        self.matplotlibVLayout.addWidget(self.__canvas)
 
         # connection du lineEdit de la fonction
         self.fonctionEdit.editingFinished.connect(lambda : self.__model.fonction(self.fonctionEdit.text))
@@ -36,7 +40,9 @@ class FenetrePrincipale(QMainWindow):
         # Connexion de l'action du menu au changement de couleur
         self.actionCouleur.triggered.connect(self.changement_couleur)
 
-
+        # Connexions des SpinBox pour Xmin et Xmax
+        self.SpinXmin.valueChanged.connect(self.changement_Xmin)
+        self.SpinXmax.valueChanged.connect(self.changement_Xmax)
 
     @property
     def model(self):
@@ -47,3 +53,13 @@ class FenetrePrincipale(QMainWindow):
         if couleur.isValid():
             self.__model.couleur = couleur.name()  # Met à jour la couleur dans le modèle
             self.__canvas.dessiner()  # Redessine le graphique avec la nouvelle couleur
+
+    def changement_Xmin(self, valeur: float):
+        """Met à jour Xmin dans le modèle et redessine le graphique."""
+        self.__model.x_min = valeur
+        self.__canvas.dessiner()
+
+    def changement_Xmax(self, valeur: float):
+        """Met à jour Xmax dans le modèle et redessine le graphique."""
+        self.__model.x_max = valeur
+        self.__canvas.dessiner()

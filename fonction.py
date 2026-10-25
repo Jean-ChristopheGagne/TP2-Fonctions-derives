@@ -1,10 +1,9 @@
-from abc import ABC
 import sympy as sp
 from PyQt6.QtCore import QObject
 from sympy import Expr
 import matplotlib.colors as mcolors
 
-class Fonction(ABC, QObject):
+class Fonction(QObject):
 
     _fonction : Expr
     _x_min : float
@@ -30,12 +29,12 @@ class Fonction(ABC, QObject):
 
     @property
     def couleur(self):
-        return self.__couleur
+        return self._couleur
 
     @couleur.setter
     def couleur(self, value : str):
         if Fonction.valider_couleur(value) :
-            self.__couleur = value
+            self._couleur = value
         else :
             raise ValueError("Couleur impossible")
 
@@ -60,5 +59,5 @@ class Fonction(ABC, QObject):
         self._x_max = value
 
     @staticmethod
-    def valider_couleur(couleur : str) -> bool:
+    def valider_couleur(couleur : str):
         return mcolors.is_color_like(couleur)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>737</width>
-    <height>667</height>
+    <width>963</width>
+    <height>747</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,10 +25,10 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="Xmin"/>
+       <widget class="QDoubleSpinBox" name="SpinXmin"/>
       </item>
       <item row="1" column="4">
-       <widget class="QDoubleSpinBox" name="Xmax"/>
+       <widget class="QDoubleSpinBox" name="SpinXmax"/>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_5">
@@ -148,7 +148,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>737</width>
+     <width>963</width>
      <height>33</height>
     </rect>
    </property>
