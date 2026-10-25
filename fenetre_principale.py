@@ -33,11 +33,7 @@ class FenetrePrincipale(QMainWindow):
         # connection du lineEdit de la fonction
         self.fonctionEdit.editingFinished.connect(lambda : self.__model.fonction(self.fonctionEdit.text))
 
-        triggered.connect(self.changement_couleur()))
 
-        # # Création du menu Setting
-        menu_file = self.menuBar("Setting")
-        menu_file.addAction("Couleur")
 
     @property
     def model(self):
