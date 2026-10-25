@@ -27,7 +27,7 @@ class Canvas(FigureCanvasQTAgg):
 
             # 3. Génération des points x pour l'évaluation
             if self.__model.fonction:
-                x = np.linspace(self.__Xmin, self.__Xmax, 500)
+                x = np.linspace(self.__model.x_min, self.__model.x_max, 500)
                 y = self.__model.fonction(x)
 
                 # Gestion du cas où f(x) est une constante

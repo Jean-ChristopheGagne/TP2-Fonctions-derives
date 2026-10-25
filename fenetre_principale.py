@@ -33,6 +33,9 @@ class FenetrePrincipale(QMainWindow):
         # connection du lineEdit de la fonction
         self.fonctionEdit.editingFinished.connect(lambda : self.__model.fonction(self.fonctionEdit.text))
 
+        # Connexion de l'action du menu au changement de couleur
+        self.actionCouleur.triggered.connect(self.changement_couleur)
+
 
 
     @property
@@ -40,6 +43,7 @@ class FenetrePrincipale(QMainWindow):
         return self.__model
 
     def changement_couleur(self):
-     couleur = QColorDialog.getColor()
-     if couleur.isValid():
-        print(couleur.name())  # Affiche la couleur en format hexadécimal
+        couleur = QColorDialog.getColor()
+        if couleur.isValid():
+            self.__model.couleur = couleur.name()  # Met à jour la couleur dans le modèle
+            self.__canvas.dessiner()  # Redessine le graphique avec la nouvelle couleur
