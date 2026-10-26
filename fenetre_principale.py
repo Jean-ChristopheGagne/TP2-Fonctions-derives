@@ -1,6 +1,7 @@
 import scipy as sp
+from PyQt6.QtCore import QAbstractListModel
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QLineEdit, QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
+from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
     QComboBox
 from PyQt6.uic import loadUi
 
@@ -22,6 +23,7 @@ class FenetrePrincipale(QMainWindow):
     SpinXmax : QDoubleSpinBox
     __couleur: QColorDialog
     slider: QSlider
+    __fonctionListView: QAbstractListModel
 
 
     def __init__(self):
@@ -35,21 +37,18 @@ class FenetrePrincipale(QMainWindow):
         self.__canvas = Canvas(self.__model)
         self.matplotlibVLayout.addWidget(self.__canvas)
 
-        # Connexion du lineEdit de la fonction à la méthode dédiée
-        self.fonctionEdit.editingFinished.connect(self.changement_fonction)
-
         # Connexion de l'action du menu au changement de couleur
         self.actionCouleur.triggered.connect(self.changement_couleur)
 
         # Connexions des SpinBox pour Xmin et Xmax
         self.SpinXmin.valueChanged.connect(self.changement_Xmin)
         self.SpinXmax.valueChanged.connect(self.changement_Xmax)
-
+########################################################Continuer################################################
         self.editeurFonction = FenetreListFonction(parent=self)
 
-        self.fonctionEdit.setModel(self.__canvas)
-        
+        self.fonctionEdit.setModel(self.__fonctionListView)    # affiche ComboBox
 
+    ###############################################################################################################
 
     @property
     def model(self):
