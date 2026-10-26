@@ -1,79 +1,68 @@
-import re
+import sympy as sp
 from PyQt6.QtWidgets import QDockWidget
-from PyQt6.QtCore import QAbstractListModel, Qt, QModelIndex
 from PyQt6.uic import loadUi
 
-import fonction
 from fonction import Fonction
+from list_fonction import ListFonction
+
+
+# Assurez-vous que c'est le bon nom de fichier pour votre classe ListFonction
 
 
 class FenetreListFonction(QDockWidget):
 
-    __fonction: list[Fonction]
-
     def __init__(self, parent=None):
         super().__init__(parent)
         loadUi("ui/listfonction.ui", self)
-        self.__fonction = fonction
 
-    def rowCount(self, parent=...):
-        # retourner le nombre d'objets a afficher
-        return len(self.__fonction)
+        # Instanciation du modèle de données
+        self.__modele = ListFonction()
 
-    def data(self, index, role):
-        # Il se peut que temporairement pendant un ajout ou une suppression l'index soit non valide...
-        if not index.isValid() or not (0 <= index.row() < len(self.__fonction)):
-            return None
+        # Liaison du modèle au QListView (fonctionListView dans ton XML)
+        self.fonctionListView.setModel(self.__modele)
 
-        #récupérer l'objet a la row "index"
-        molecule = self.__fonction[index.row()]
+        # Connexions des signaux aux slots
+        self.ajouter.clicked.connect(self.ajouter_fonction)
+        self.enlever.clicked.connect(self.enlever_fonction)
 
-        #Pour chaque role décider ce qu'on doit afficher pour notre objet
-        if role == Qt.ItemDataRole.DisplayRole:
-            # Le texte clé à afficher directement à l'écran (souvent str)
-            return str(fonction)
+        #Liaison du modèle à la QListView présente dans ton fichier .ui
+        if hasattr(self, "listView"):
+            self.listView.setModel(self.__modele)
 
-        if role == Qt.ItemDataRole.EditRole:
-            # Le texte clé à afficher lorsqu'on edite l'élément (souvent str)
-            return str(fonction)
+    @property
+    def modele(self):
+        """Expose le modèle pour pouvoir le lier au QComboBox de la fenêtre principale."""
+        return self.__modele
 
-        elif role == Qt.ItemDataRole.ToolTipRole:
-            # Le texte de l'info-bulle qui apparaît lorsque l'utilisateur laisse sa souris immobile sur l'élément.
-            return str(fonction)
-        return None
+    def ajouter_fonction(self):
+        """Valide l'expression SymPy, colore si invalide, et ajoute au modèle."""
+        texte = self.lineEdit.text().strip()
 
-    def add_item(self, item):
-        self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
-        #le code qui insère l'objet
-        self.__fonction.append(item)
-        self.endInsertRows()
-        idx1 = self.index(0)
-        idx2 = self.index(self.rowCount())
-        self.dataChanged.emit(idx1, idx2, [Qt.ItemDataRole.DisplayRole])
+        if not texte:
+            return
 
-    def remove_item(self, index: int):
-        self.beginRemoveRows(QModelIndex(), self.rowCount(), self.rowCount())
-        #le code qui supprime l'objet
-        self.__fonction.pop(index)
-        self.endRemoveRows()
-        idx = self.index(index)
-        self.dataChanged.emit(idx, idx, [Qt.ItemDataRole.DisplayRole])
+        try:
+            # 1. Validation avec SymPy
+            expr = sp.sympify(texte)
 
-     # Pour l'édition
-    def flags(self, index):
-        return super().flags(index) | Qt.ItemFlag.ItemIsEditable
+            # 2. Création de l'objet Fonction (par exemple avec la couleur bleue par défaut)
+            nouvelle_fonction = Fonction(expr, "blue", 0.0, 10.0)
 
-    def setData(self, index, valeur, role=Qt.ItemDataRole.EditRole):
-        if role == Qt.ItemDataRole.EditRole and valeur:
-            s = str(valeur)
-            m = re.fullmatch(r"\s*(.*?)\s*\((.*)\)\s*", s)
-            if m:
-                fonction = m.groups()
-            else:
-                fonction = s.strip(), "Not Defined"  # pas de parenthèses
+            # 3. Ajout dans le modèle (ce qui met à jour la QListView et le QComboBox)
+            self.__modele.add_item(nouvelle_fonction)
 
-            fx = self.__fonction[index.row()]
-            fx.fonction = fonction
-            self.dataChanged.emit(index, index, [role])
-            return True
-        return False
+            # 4. Réinitialisation du champ et du style
+            self.lineEdit.clear()
+            self.lineEdit.setStyleSheet("")
+
+        except Exception as e:
+            # Si l'expression est invalide : fond rouge clair
+            self.lineEdit.setStyleSheet("background-color: #ffcccc;")
+            print(f"Expression invalide : {e}")
+
+    def enlever_fonction(self):
+        """Supprime la fonction actuellement sélectionnée dans la QListView."""
+        index_selectionne = self.fonctionListView.currentIndex()
+        if index_selectionne.isValid():
+            ligne = index_selectionne.row()
+            self.__modele.remove_item(ligne)

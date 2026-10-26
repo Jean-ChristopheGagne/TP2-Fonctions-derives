@@ -1,8 +1,9 @@
+import sympy as sp
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 import matplotlib.pyplot as plt
 import numpy as np
+from sympy.abc import x
 
-from fonction import Fonction
 from fonction_couple import FonctionCouple
 
 
@@ -21,6 +22,12 @@ class Canvas(FigureCanvasQTAgg):
         # garder la reférence sur le model
         self.__model = model
         self.dessiner()
+
+        #Transformer l'expression SymPy en fonction numérique compatible avec numpy
+        f_numerique = sp.lambdify(self.__model.x, self.__model.fonction, "numpy")
+
+        #Calculer les valeurs de y pour ton tableau de x
+        y = f_numerique(x)
 
     def dessiner(self):
             self.__ax[0].clear()
@@ -41,11 +48,6 @@ class Canvas(FigureCanvasQTAgg):
             #Appliquer explicitement les bornes de l'axe x sur les graphiques
             self.__ax[0].set_xlim(self.__model.x_min, self.__model.x_max)
             self.__ax[1].set_xlim(self.__model.x_min, self.__model.x_max)
-
-
-            # Configuration des options visuelles(couleurs)
-            # self.__ax[0].plot(self.__model.couleur)
-            # self.__ax[1].plot(self.__model.couleur)
 
             # Configuration des titres
             self.__ax[0].set_title("Fonction originale")

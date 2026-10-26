@@ -1,5 +1,5 @@
 import sympy as sp
-from PyQt6.QtCore import QAbstractListModel
+from PyQt6.QtCore import QAbstractListModel, Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
     QComboBox
@@ -31,11 +31,14 @@ class FenetrePrincipale(QMainWindow):
         loadUi("ui/tp2derivee.ui", self)
 
         # instance du model
-        self.__model = Fonction(None, "blue")
+        self.__model = Fonction(None, "blue", 0.0, 10.0)
 
         # création et stockage du canvas dans un attribut self.__canvas
         self.__canvas = Canvas(self.__model)
         self.matplotlibVLayout.addWidget(self.__canvas)
+
+        # Connexion du signal du modèle pour redessiner automatiquement
+        self.__model.changed.connect(self.__canvas.dessiner)
 
         # Connexion de l'action du menu au changement de couleur
         self.actionCouleur.triggered.connect(self.changement_couleur)
@@ -43,12 +46,17 @@ class FenetrePrincipale(QMainWindow):
         # Connexions des SpinBox pour Xmin et Xmax
         self.SpinXmin.valueChanged.connect(self.changement_Xmin)
         self.SpinXmax.valueChanged.connect(self.changement_Xmax)
-########################################################Continuer################################################
+
+        #Initialisation de la fenêtre dockable d'édition de fonctions
         self.editeurFonction = FenetreListFonction(parent=self)
 
-        self.fonctionEdit.setModel(self.__fonctionListView)    # affiche ComboBox
+        #Forcer l'affichage du dock widget du côté droit de la fenêtre principale
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.editeurFonction)
 
-    ###############################################################################################################
+        #Récupération du modèle et liaison avec le ComboBox
+        self.__fonctionListView = self.editeurFonction.modele
+        self.fonctionEdit.setModel(self.__fonctionListView)
+        self.fonctionEdit.currentTextChanged.connect(self.changement_fonction)
 
     @property
     def model(self):
@@ -78,7 +86,7 @@ class FenetrePrincipale(QMainWindow):
 
     def changement_fonction(self):
         """Récupère le texte de l'input, le convertit en SymPy et redessine."""
-        texte = self.fonctionEdit.text()
+        texte = self.fonctionEdit.currentText()       # Pour QComboBox()
         try:
             if texte.strip() == "":
                 self.__model.fonction = None
