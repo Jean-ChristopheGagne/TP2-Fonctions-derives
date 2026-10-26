@@ -1,9 +1,11 @@
 import scipy as sp
 from PyQt6.QtGui import QAction
-from PyQt6.QtWidgets import QLineEdit, QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog
+from PyQt6.QtWidgets import QLineEdit, QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
+    QComboBox
 from PyQt6.uic import loadUi
 
 from canvas import Canvas
+from fenetre_list_fonction import FenetreListFonction
 from fonction import Fonction
 
 
@@ -11,14 +13,15 @@ class FenetrePrincipale(QMainWindow):
 
     __model : Fonction
     matplotlibVLayout : QVBoxLayout
-    fonctionEdit : QLineEdit
+    fonctionEdit : QComboBox
     actionCouleur : QAction
     labelTangeance: QLabel
     labelDerivee: QLabel
     labelVariation: QLabel
     SpinXmin : QDoubleSpinBox
     SpinXmax : QDoubleSpinBox
-    _couleur: QColorDialog
+    __couleur: QColorDialog
+    slider: QSlider
 
 
     def __init__(self):
@@ -42,6 +45,12 @@ class FenetrePrincipale(QMainWindow):
         self.SpinXmin.valueChanged.connect(self.changement_Xmin)
         self.SpinXmax.valueChanged.connect(self.changement_Xmax)
 
+        self.editeurFonction = FenetreListFonction(parent=self)
+
+        self.fonctionEdit.setModel(self.__canvas)
+        
+
+
     @property
     def model(self):
         return self.__model
@@ -50,7 +59,7 @@ class FenetrePrincipale(QMainWindow):
         couleur = QColorDialog.getColor()
         if couleur.isValid():
             self.__model.couleur = couleur.name()  # Met à jour la couleur dans le modèle
-            self.__canvas.dessiner()  # Redessine le graphique avec la nouvelle couleur
+            self.__canvas.dessiner()  # Redessine les graphiques avec la nouvelle couleur
 
     def changement_Xmin(self, valeur: float):
         """Met à jour Xmin et force le maximum de SpinXmax à rester supérieur."""

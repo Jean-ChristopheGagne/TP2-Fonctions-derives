@@ -6,17 +6,51 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>963</width>
-    <height>747</height>
+    <width>759</width>
+    <height>735</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1,0">
+   <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1,0,0">
     <item>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>fonction:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>x minimum:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="4">
+       <widget class="QDoubleSpinBox" name="SpinXmax">
+        <property name="value">
+         <double>10.000000000000000</double>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="3">
        <widget class="QLabel" name="label_6">
         <property name="text">
@@ -34,22 +68,18 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="4">
-       <widget class="QDoubleSpinBox" name="SpinXmax">
-        <property name="value">
-         <double>10.000000000000000</double>
-        </property>
-       </widget>
+      <item row="0" column="1" colspan="5">
+       <widget class="QComboBox" name="fonctionEdit"/>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>fonction:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <spacer name="horizontalSpacer">
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="matplotlibVLayout"/>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="1">
+       <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
         </property>
@@ -61,20 +91,14 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>x minimum:</string>
+      <item row="0" column="0">
+       <widget class="QSlider" name="horizontalSlider">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="4">
-       <widget class="QLineEdit" name="fonctionEdit"/>
-      </item>
      </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="matplotlibVLayout"/>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -87,59 +111,39 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="0" column="0">
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="1" column="1">
-              <widget class="QLabel" name="labelTangeance">
+            <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,0,0,0">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
                <property name="text">
-                <string>TextLabel</string>
+                <string>                                   Fonction Dérivée:</string>
                </property>
               </widget>
-             </item>
-             <item row="1" column="2">
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Orientation::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>698</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>Point tangeance: </string>
+                <string>                                    Point tangeance: </string>
                </property>
               </widget>
              </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_2">
                <property name="text">
-                <string>Fonction Dérivée:</string>
+                <string>                                     Taux de variation:</string>
                </property>
               </widget>
              </item>
              <item row="1" column="3">
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="labelVariation">
                <property name="text">
-                <string>Taux de variation:</string>
+                <string/>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
               <widget class="QLabel" name="labelDerivee">
                <property name="text">
-                <string>TextLabel</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="4">
-              <widget class="QLabel" name="labelVariation">
-               <property name="text">
-                <string>TextLabel</string>
+                <string/>
                </property>
               </widget>
              </item>
@@ -159,7 +163,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>963</width>
+     <width>759</width>
      <height>33</height>
     </rect>
    </property>

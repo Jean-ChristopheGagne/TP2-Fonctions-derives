@@ -9,5 +9,5 @@ class FonctionDerivee(Fonction):
         super().__init__()
 
     @classmethod
-    def determiner_derivee(cls, Expr) -> Expr:
+    def determiner_derivee(cls, Expr):
         return sp.d
