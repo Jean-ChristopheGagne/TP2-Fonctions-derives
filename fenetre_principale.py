@@ -1,4 +1,4 @@
-import scipy as sp
+import sympy as sp
 from PyQt6.QtCore import QAbstractListModel
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
@@ -31,7 +31,7 @@ class FenetrePrincipale(QMainWindow):
         loadUi("ui/tp2derivee.ui", self)
 
         # instance du model
-        self.__model = Fonction(None, "blue", 0.0, 10.0)
+        self.__model = Fonction(None, "blue")
 
         # création et stockage du canvas dans un attribut self.__canvas
         self.__canvas = Canvas(self.__model)

@@ -9,10 +9,22 @@ class FonctionCouple:
     __fonction_principale : FonctionPrincipale
     __fonction_derivee : FonctionDerivee
     __x: Expr
+    __x_min: float
+    __x_max: float
 
-    def __init__(self, f_str : str, couleur_f_princ : str, couleur_f_der : str, x_min : float, x_max : float):
+    def __init__(self, f_str : str, couleur_f_princ : str, couleur_f_der : str):
         self.__x = sp.symbols("x")
-        self.__fonction_principale = FonctionPrincipale(FonctionCouple.definir_fonction_principale(f_str), couleur_f_princ, x_min, x_max)
+        self.__fonction_principale = FonctionPrincipale(FonctionCouple.definir_fonction_principale(f_str), couleur_f_princ)
+        self.__fonction_derivee = FonctionDerivee(FonctionCouple.definir_fonction_principale(f_str), couleur_f_der)
+
+    @property
+    def fonction_principale(self):
+        return self.__fonction_principale
+
+    @fonction_principale.setter
+    def fonction_principale(self, value : FonctionPrincipale):
+        self.__fonction_principale = value
+        self.__fonction_derivee.changer_fonc_orig(value.fonction)
 
     @property
     def fonction_derivee(self):

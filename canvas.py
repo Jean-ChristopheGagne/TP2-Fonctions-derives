@@ -3,13 +3,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from fonction import Fonction
+from fonction_couple import FonctionCouple
+
 
 class Canvas(FigureCanvasQTAgg):
 
     __fig : plt.Figure
-    __model : Fonction
+    __model : FonctionCouple
 
-    def __init__(self, model : Fonction):
+    def __init__(self, model : FonctionCouple):
         # création d'une figure matplotlib
         self.__fig, self.__ax = plt.subplots(1,2)
 
