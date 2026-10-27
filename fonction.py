@@ -15,7 +15,7 @@ class Fonction(QObject):
     _couleur : str
     _x : Expr
 
-    def __init__(self, fonction : Expr, couleur : str, x_min : float, x_max : float):
+    def __init__(self, fonction : Expr, couleur : str, x_min : float = 0.0, x_max : float = 10.0):
         super().__init__()
         self._x = sp.symbols("x")
         self._fonction = fonction
