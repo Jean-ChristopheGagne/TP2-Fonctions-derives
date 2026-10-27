@@ -5,22 +5,18 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from sympy import Expr
 import matplotlib.colors as mcolors
 
-class Fonction(QObject):
+class Fonction(QObject, ABC):
     # Définition du signal personnalisé
     changed = pyqtSignal()
 
     _fonction : Expr
-    _x_min : float
-    _x_max : float
     _couleur : str
     _x : Expr
 
-    def __init__(self, fonction : Expr, couleur : str, x_min : float = 0.0, x_max : float = 10.0):
+    def __init__(self, fonction : Expr, couleur : str):
         super().__init__()
         self._x = sp.symbols("x")
         self._fonction = fonction
-        self._x_min = x_min
-        self._x_max = x_max
         self.couleur = couleur
 
     @property
@@ -47,24 +43,6 @@ class Fonction(QObject):
     @property
     def x(self):
         return self._x
-
-    @property
-    def x_min(self):
-        return self._x_min
-
-    @x_min.setter
-    def x_min(self, value : float):
-        self._x_min = value
-        self.changed.emit()  # Émet un signal
-
-    @property
-    def x_max(self):
-        return self._x_max
-
-    @x_max.setter
-    def x_max(self, value : float):
-        self._x_max = value
-        self.changed.emit()  # Émet un signal
 
     @staticmethod
     def valider_couleur(couleur : str):

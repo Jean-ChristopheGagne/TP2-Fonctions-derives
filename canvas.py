@@ -27,12 +27,12 @@ class Canvas(FigureCanvasQTAgg):
         self.__ax[1].clear()  # Efface les anciens axes
 
         # Génération des points x pour l'évaluation
-        if self.__model.fonction is not None:
+        if self.__model.fonction_principale is not None:
             try:
                 x_vals = np.linspace(self.__model.x_min, self.__model.x_max, 500)
 
                 # 1. Tracé de la fonction originale sur le premier axe
-                f_numerique = sp.lambdify(self.__model.x, self.__model.fonction, "numpy")
+                f_numerique = sp.lambdify(self.__model.x, self.__model.fonction_principale, "numpy")
                 y_orig = f_numerique(x_vals)
 
                 # Gestion du cas où f(x) est une constante
@@ -49,7 +49,7 @@ class Canvas(FigureCanvasQTAgg):
                 if isinstance(y_deriv, (int, float, np.number)):
                     y_deriv = np.full_like(x_vals, y_deriv)
 
-                self.__ax[1].plot(x_vals, y_deriv, color=self.__model.couleur)
+                self.__ax[1].plot(x_vals, y_deriv, color=self.__model.fonction_principale.couleur)
 
             except Exception as e:
                 print(f"Erreur lors du tracé : {e}")
