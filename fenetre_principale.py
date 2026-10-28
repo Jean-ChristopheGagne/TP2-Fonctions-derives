@@ -49,6 +49,11 @@ class FenetrePrincipale(QMainWindow):
         # Connexions des SpinBox pour Xmin et Xmax
         self.SpinXmin.setValue(0.0)
         self.SpinXmax.setValue(10.0)
+        # Permettre aux SpinBox d'accepter des nombres négatifs
+        self.SpinXmin.setMinimum(-100.0)
+        self.SpinXmin.setMaximum(100.0)
+        self.SpinXmax.setMinimum(-100.0)
+        self.SpinXmax.setMaximum(100.0)
         self.SpinXmin.valueChanged.connect(self.changement_Xmin)
         self.SpinXmax.valueChanged.connect(self.changement_Xmax)
 
@@ -120,7 +125,7 @@ class FenetrePrincipale(QMainWindow):
             print(f"Erreur dans l'expression de la fonction : {e}")
 
     def mettre_a_jour_variation(self, valeur_x: float):
-        """Calcule et affiche la valeur de la dérivée (taux de variation) pour un x donné."""
+        """Calcule et affiche le taux de variation et le point de tangeance pour un x donné."""
         try:
             # Vérifie si la fonction dérivée existe dans le modèle
             if self.__model.fonction_derivee.fonction is not None:
@@ -129,13 +134,26 @@ class FenetrePrincipale(QMainWindow):
                 # On évalue la dérivée et on s'assure d'avoir un float
                 taux = float(derivee_obj.tan_un_point(valeur_x))
 
-                # Formatage strict à 5 décimales pour le taux de variation
+                # Affichage dans labelVariation
                 texte_affiche = f"Taux de variation (en x = {valeur_x:.2f}) : {taux:.5f}"
                 self.labelVariation.setText(texte_affiche)
             else:
                 self.labelVariation.setText(f"x = {valeur_x}")
+
+            # Gestion du point de tangence (x, y) de la fonction principale
+            if self.__model.fonction_principale.fonction is not None:
+                # On évalue la fonction d'origine pour trouver y à partir de x
+                expr_orig = self.__model.fonction_principale.fonction
+                y_val = float(expr_orig.subs(self.__model.x, valeur_x))
+
+                # Affichage dans labelTangeance
+                texte_tangeance = f"({valeur_x:.2f} ; {y_val:.2f})"
+                self.labelTangeance.setText(texte_tangeance)
+            else:
+                self.labelTangeance.setText("Point de tangence : N/A")
+
         except Exception as e:
-            print(f"Erreur lors du calcul du taux de variation : {e}")
+             print(f"Erreur lors du calcul du point ou de la variation : {e}")
 
     def ajuster_limites_slider(self):
         """Ajuste les bornes du slider en multipliant par le facteur de 5 décimales."""
