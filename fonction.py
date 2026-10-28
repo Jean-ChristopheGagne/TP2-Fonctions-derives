@@ -5,33 +5,46 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from sympy import Expr
 import matplotlib.colors as mcolors
 
-class Fonction(QObject, ABC):
+class MetaClasseFonction(PyQt6Meta, ABCMeta):
+    pass
+
+class Fonction(QObject, ABC, metaclass=MetaClasseFonction):
+
     # Définition du signal personnalisé
     changed = pyqtSignal()
 
+    # Fonction décrite par l'objet
     _fonction : Expr
+
+    # Couleur de la fonction
     _couleur : str
-    _x : Expr
+
+    # Variable indépendante de tous les fonctions : la valeur ne doit pas être modifié
+    __x : Expr = sp.symbols("x")
 
     def __init__(self, fonction : Expr, couleur : str):
-        super().__init__()
-        self._x = sp.symbols("x")
+        super().__init__() # appel du constructeur parent de QObject
+        # Remplissage des attributs
         self._fonction = fonction
         self.couleur = couleur
 
+    # Accesseur de la fonction
     @property
     def fonction(self):
         return self._fonction
 
+    # Muttateur de la fonction
     @fonction.setter
     def fonction(self, value : Expr):
         self._fonction = value
         self.changed.emit()   # Émet un signal
 
+    # Accesseur de la couleur
     @property
     def couleur(self):
         return self._couleur
 
+    # Muttateur de la couleur
     @couleur.setter
     def couleur(self, value : str):
         if Fonction.valider_couleur(value) :
@@ -42,7 +55,7 @@ class Fonction(QObject, ABC):
 
     @property
     def x(self):
-        return self._x
+        return self.__x
 
     @staticmethod
     def valider_couleur(couleur : str):
