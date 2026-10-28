@@ -1,11 +1,13 @@
-from abc import ABC
+from abc import ABC, ABCMeta
 
 import sympy as sp
 from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.sip import wrappertype
 from sympy import Expr
 import matplotlib.colors as mcolors
 
-class MetaClasseFonction(PyQt6Meta, ABCMeta):
+# 1. Définition de la métaclasse pour résoudre le conflit PyQt6 (wrappertype) et ABC (ABCMeta)
+class MetaClasseFonction(wrappertype, ABCMeta):
     pass
 
 class Fonction(QObject, ABC, metaclass=MetaClasseFonction):

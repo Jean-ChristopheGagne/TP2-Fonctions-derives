@@ -2,7 +2,6 @@ import sympy as sp
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 import matplotlib.pyplot as plt
 import numpy as np
-from sympy.abc import x
 
 from fonction_couple import FonctionCouple
 
@@ -26,30 +25,39 @@ class Canvas(FigureCanvasQTAgg):
         self.__ax[0].clear()
         self.__ax[1].clear()  # Efface les anciens axes
 
-        # Génération des points x pour l'évaluation
-        if self.__model.fonction_principale is not None:
+        # Vérification si la fonction principale et son expression existent
+        if self.__model.fonction_principale is not None and self.__model.fonction_principale.fonction is not None:
             try:
                 x_vals = np.linspace(self.__model.x_min, self.__model.x_max, 500)
 
-                # 1. Tracé de la fonction originale sur le premier axe
-                f_numerique = sp.lambdify(self.__model.x, self.__model.fonction_principale, "numpy")
+                # Récupération de l'expression SymPy de la fonction principale
+                expr_princ = self.__model.fonction_principale.fonction
+                couleur_princ = self.__model.fonction_principale.couleur
+
+                # Tracé de la fonction originale sur le premier axe
+                f_numerique = sp.lambdify(self.__model.x, expr_princ, "numpy")
                 y_orig = f_numerique(x_vals)
 
                 # Gestion du cas où f(x) est une constante
                 if isinstance(y_orig, (int, float, np.number)):
                     y_orig = np.full_like(x_vals, y_orig)
 
-                self.__ax[0].plot(x_vals, y_orig, color=self.__model.couleur)
+                # Pour la fonction originale (axe 0) :
+                couleur_princ = self.__model.fonction_principale.couleur
+                self.__ax[0].plot(x_vals, y_orig, color=couleur_princ)
 
-                # 2. Calcul et tracé de la fonction dérivée sur le second axe
-                expr_derivee = sp.diff(self.__model.fonction, self.__model.x)
-                f_derivee_numerique = sp.lambdify(self.__model.x, expr_derivee, "numpy")
-                y_deriv = f_derivee_numerique(x_vals)
+                # Calcul et tracé de la fonction dérivée sur le second axe
+                if self.__model.fonction_derivee.fonction is not None:
+                    expr_derivee = self.__model.fonction_derivee.fonction
+                    couleur_deriv = self.__model.fonction_derivee.couleur
 
-                if isinstance(y_deriv, (int, float, np.number)):
-                    y_deriv = np.full_like(x_vals, y_deriv)
+                    f_derivee_numerique = sp.lambdify(self.__model.x, expr_derivee, "numpy")
+                    y_deriv = f_derivee_numerique(x_vals)
 
-                self.__ax[1].plot(x_vals, y_deriv, color=self.__model.fonction_principale.couleur)
+                    if isinstance(y_deriv, (int, float, np.number)):
+                        y_deriv = np.full_like(x_vals, y_deriv)
+
+                    self.__ax[1].plot(x_vals, y_deriv, color=couleur_deriv)
 
             except Exception as e:
                 print(f"Erreur lors du tracé : {e}")
