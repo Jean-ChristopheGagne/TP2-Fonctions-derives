@@ -18,6 +18,7 @@ class FenetrePrincipale(QMainWindow):
     fonctionEdit : QComboBox
     actionCouleurOriginale : QAction
     actionCouleurDerivee : QAction
+    actionEditeurFonction: QAction
     labelTangeance: QLabel
     labelDerivee: QLabel
     labelVariation: QLabel
@@ -76,6 +77,11 @@ class FenetrePrincipale(QMainWindow):
         # Initialisation de la fenêtre dockable d'édition de fonctions
         self.editeurFonction = FenetreListFonction(parent=self)
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.editeurFonction)   # affiche le dock widget à droite
+        #Instanciation en premier de la fenêtre dockable d'édition de fonctions
+
+        # S'assurer qu'il est bien visible à l'instanciation et connecter l'action du menu
+        self.editeurFonction.setVisible(True)
+        self.actionEditeurFonction.triggered.connect(self.basculer_affichage_editeur)
 
         # Récupération du modèle et liaison avec le ComboBox
         self.__fonctionListView = self.editeurFonction.modele
@@ -99,6 +105,13 @@ class FenetrePrincipale(QMainWindow):
             # Modifie uniquement la couleur de la fonction dérivée
             self.__model.fonction_derivee.couleur = couleur.name()
             self.__canvas.dessiner()
+
+    def basculer_affichage_editeur(self):
+        """Bascule l'affichage du dock widget (le cache s'il est visible, l'affiche s'il est caché)."""
+        if self.editeurFonction.isVisible():
+            self.editeurFonction.hide()
+        else:
+            self.editeurFonction.show()
 
     def changement_Xmin(self, valeur: float):
         self.SpinXmax.setMinimum(valeur + 0.1)
