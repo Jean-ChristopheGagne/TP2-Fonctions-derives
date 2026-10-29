@@ -1,4 +1,5 @@
-from abc import ABC, ABCMeta
+from abc import ABC, ABCMeta, abstractmethod
+from typing import override
 
 import sympy as sp
 from PyQt6.QtCore import QObject, pyqtSignal
@@ -24,6 +25,7 @@ class Fonction(QObject, ABC, metaclass=MetaClasseFonction):
     # Variable indépendante de tous les fonctions : la valeur ne doit pas être modifié
     __x : Expr = sp.symbols("x")
 
+    # Constructeur de Fonction avec la fonction et sa couleur
     def __init__(self, fonction : Expr, couleur : str):
         super().__init__() # appel du constructeur parent de QObject
 
@@ -56,10 +58,19 @@ class Fonction(QObject, ABC, metaclass=MetaClasseFonction):
         else :
             raise ValueError("Couleur impossible")
 
-    @property
-    def x(self):
-        return self.__x
+    # Accesseur de la variable
+    @classmethod
+    def x(cls):
+        return cls.__x
 
+    # Validateur de la couleur
     @staticmethod
     def valider_couleur(couleur : str):
         return mcolors.is_color_like(couleur)
+
+    # repr de Fonction avec tout les valeurs de attibut.
+    # Cette méthode doit être implémenté dans les classes inférieur
+    @abstractmethod
+    @override
+    def __repr__(self):
+        return f"fonction : {self.fonction} | couleur : {self.couleur}"
