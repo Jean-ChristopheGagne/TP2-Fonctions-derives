@@ -148,7 +148,7 @@ class FenetrePrincipale(QMainWindow):
         try:
             # Vérifie si la fonction dérivée existe dans le modèle
             if self.__model.fonction_derivee.fonction is not None:
-                # Utilise la méthode de ta classe FonctionDerivee pour évaluer en un point
+                # Utilise la méthode de la classe FonctionDerivee pour évaluer en un point
                 derivee_obj = self.__model.fonction_derivee
                 # On évalue la dérivée et on s'assure d'avoir un float
                 taux = float(derivee_obj.tan_un_point(valeur_x))

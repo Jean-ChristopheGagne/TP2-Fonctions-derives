@@ -1,3 +1,5 @@
+from typing import override
+
 from sympy import Expr
 import sympy as sp
 
@@ -5,8 +7,10 @@ from fonction import Fonction
 
 class FonctionDerivee(Fonction):
 
+    # La fonction d'origine
     __fonc_orig : Expr
 
+    # Contructeur de la fonction dérivée à partir de la fonction d'origine
     def __init__(self, fonc_orig : Expr, couleur : str):
         # calcul de la dérivée
         derivee: Expr = sp.diff(fonc_orig, Fonction.x())
@@ -50,8 +54,15 @@ class FonctionDerivee(Fonction):
         """
         return self.tan_un_point(valeur_x) * Fonction.x() + self.ord_orig_tan_un_point(valeur_x)
 
+    # repr de FonctionDerivee : retourne les valeurs de la fonction
+    # en précisant que c'est une fonction dérivée
+    @override
     def __repr__(self):
         return f"Fonction dérivée | Fonction d'origine : {self.__fonc_orig} | {super().__repr__()}"
 
     def changer_fonc_orig(self, nouv_fonc : Expr):
+        """
+        Cette méthode change la fonction d'origine si elle est changer dans le graphique
+        :param nouv_fonc: la nouvelle fonction d'origine
+        """
         self.__init__(nouv_fonc, self.couleur)
