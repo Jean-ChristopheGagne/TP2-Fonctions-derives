@@ -8,10 +8,14 @@ class FonctionDerivee(Fonction):
     __fonc_orig : Expr
 
     def __init__(self, fonc_orig : Expr, couleur : str):
-        super().__init__(self.determiner_derivee(fonc_orig), couleur)
+        # Si fonc_orig est None, on passe None à la classe mère, sinon on calcule la dérivée
+        derivee = sp.diff(fonc_orig, self.x) if fonc_orig is not None else None
+        super().__init__(derivee, couleur)
         self.__fonc_orig = fonc_orig
 
     def determiner_derivee(self, fonction_originale : Expr) -> Expr:
+        if fonction_originale is None:
+            return None
         return sp.diff(fonction_originale, self.x)
 
     def tan_un_point(self, valeur_x : float) -> float:
