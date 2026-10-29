@@ -33,6 +33,9 @@ class FenetrePrincipale(QMainWindow):
         super().__init__()
         loadUi("ui/tp2derivee.ui", self)
 
+        # Définir une taille initiale plus grande (largeur, hauteur en pixels)
+        self.resize(1200, 800)
+
         # Instance du modèle global (FonctionCouple)
         self.__model = FonctionCouple()
 
