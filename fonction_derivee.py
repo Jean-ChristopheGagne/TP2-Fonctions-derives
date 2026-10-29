@@ -12,11 +12,9 @@ class FonctionDerivee(Fonction):
 
     # Contructeur de la fonction dérivée à partir de la fonction d'origine
     def __init__(self, fonc_orig : Expr, couleur : str):
-        # calcul de la dérivée
-        derivee: Expr = sp.diff(fonc_orig, Fonction.x())
-        # Appel du constructeur parent
+        # On vérifie si fonc_orig n'est pas None avant d'appliquer sp.diff
+        derivee = sp.diff(fonc_orig, self.x) if fonc_orig is not None else None
         super().__init__(derivee, couleur)
-        # définition de la fonction d'origine
         self.__fonc_orig = fonc_orig
 
     @classmethod
