@@ -26,6 +26,7 @@ class Fonction(QObject, ABC, metaclass=MetaClasseFonction):
 
     def __init__(self, fonction : Expr, couleur : str):
         super().__init__() # appel du constructeur parent de QObject
+
         # Remplissage des attributs
         self._fonction = fonction
         self.couleur = couleur

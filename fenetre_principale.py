@@ -144,7 +144,7 @@ class FenetrePrincipale(QMainWindow):
             print(f"Erreur dans l'expression de la fonction : {e}")
 
     def mettre_a_jour_variation(self, valeur_x: float):
-        """Calcule et affiche le taux de variation et le point de tangeance pour un x donné."""
+        """Calcule et affiche le taux de variation, le point de tangeance pour un x donné et la dérivée dans les labels appropriés."""
         try:
             # Vérifie si la fonction dérivée existe dans le modèle
             if self.__model.fonction_derivee.fonction is not None:

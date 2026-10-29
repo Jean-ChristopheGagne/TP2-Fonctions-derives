@@ -5,10 +5,6 @@ from PyQt6.uic import loadUi
 from fonction import Fonction
 from list_fonction import ListFonction
 
-
-# Assurez-vous que c'est le bon nom de fichier pour votre classe ListFonction
-
-
 class FenetreListFonction(QDockWidget):
 
     def __init__(self, parent=None):
@@ -43,7 +39,6 @@ class FenetreListFonction(QDockWidget):
             self.lineEdit.setStyleSheet("")
             self.ajouter.setEnabled(False)
             return
-
         try:
             #Valide aussi bien les constantes (ex: 3) que les expressions avec 'x'
             sp.sympify(texte)
@@ -60,7 +55,6 @@ class FenetreListFonction(QDockWidget):
         texte = self.lineEdit.text().strip()
         if not texte:
             return
-
         try:
             expr = sp.sympify(texte)
             nouvelle_fonction = Fonction(expr, "blue")

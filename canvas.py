@@ -28,6 +28,7 @@ class Canvas(FigureCanvasQTAgg):
         # Vérification si la fonction principale et son expression existent
         if self.__model.fonction_principale is not None and self.__model.fonction_principale.fonction is not None:
             try:
+                # Crée un tableau de 500 points de même distance entre x_min et x_max pour tracer les graphiques
                 x_vals = np.linspace(self.__model.x_min, self.__model.x_max, 500)
 
                 # Récupération de l'expression SymPy de la fonction principale
