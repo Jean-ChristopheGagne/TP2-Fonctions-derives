@@ -42,6 +42,9 @@ class FenetrePrincipale(QMainWindow):
         # Connexion du signal du modèle pour redessiner automatiquement
         self.__model.changed.connect(self.__canvas.dessiner)
 
+        # Mettre à jour les labels sous les graphiques
+        self.__model.changed.connect(self.actualiser_labels_par_defaut)
+
         # Connexion de l'action du menu au changement de couleur
         self.actionCouleurOriginale.triggered.connect(self.changement_couleur_originale)
         self.actionCouleurDerivee.triggered.connect(self.changement_couleur_derivee)
@@ -50,10 +53,10 @@ class FenetrePrincipale(QMainWindow):
         self.SpinXmin.setValue(0.0)
         self.SpinXmax.setValue(10.0)
         # Permettre aux SpinBox d'accepter des nombres négatifs
-        self.SpinXmin.setMinimum(-100.0)
-        self.SpinXmin.setMaximum(100.0)
-        self.SpinXmax.setMinimum(-100.0)
-        self.SpinXmax.setMaximum(100.0)
+        self.SpinXmin.setMinimum(-500.0)
+        self.SpinXmin.setMaximum(500.0)
+        self.SpinXmax.setMinimum(-500.0)
+        self.SpinXmax.setMaximum(500.0)
         self.SpinXmin.valueChanged.connect(self.changement_Xmin)
         self.SpinXmax.valueChanged.connect(self.changement_Xmax)
 
@@ -135,7 +138,7 @@ class FenetrePrincipale(QMainWindow):
                 taux = float(derivee_obj.tan_un_point(valeur_x))
 
                 # Affichage dans labelVariation
-                texte_affiche = f"Taux de variation (en x = {valeur_x:.2f}) : {taux:.5f}"
+                texte_affiche = f"x = {valeur_x:.2f}) : {taux:.5f}"
                 self.labelVariation.setText(texte_affiche)
             else:
                 self.labelVariation.setText(f"x = {valeur_x}")
@@ -150,10 +153,17 @@ class FenetrePrincipale(QMainWindow):
                 texte_tangeance = f"({valeur_x:.2f} ; {y_val:.2f})"
                 self.labelTangeance.setText(texte_tangeance)
             else:
-                self.labelTangeance.setText("Point de tangence : N/A")
+                self.labelTangeance.setText("")
+
+            # Gestion de l'affichage de la fonction dérivée dans labelDerivee
+            if self.__model.fonction_derivee.fonction is not None:
+                expr_deriv = self.__model.fonction_derivee.fonction
+                self.labelDerivee.setText(f"{expr_deriv}")
+            else:
+                self.labelDerivee.setText("")
 
         except Exception as e:
-             print(f"Erreur lors du calcul du point ou de la variation : {e}")
+            print(f"Erreur lors de la mise à jour des labels : {e}")
 
     def ajuster_limites_slider(self):
         """Ajuste les bornes du slider en multipliant par le facteur de 5 décimales."""
@@ -172,3 +182,13 @@ class FenetrePrincipale(QMainWindow):
 
         # Exemple d'utilisation avec ton taux de variation :
         self.mettre_a_jour_variation(valeur_x_formatee)
+
+    def actualiser_labels_par_defaut(self):
+        """Met à jour les labels automatiquement dès que le modèle change."""
+        # Tu peux prendre la valeur actuelle du slider ou une valeur par défaut (ex: 0.0)
+        if hasattr(self, 'slider'):
+            valeur_x = self.slider.value() / self.__facteur_precision
+        else:
+            valeur_x = 0.0
+
+        self.mettre_a_jour_variation(valeur_x)
