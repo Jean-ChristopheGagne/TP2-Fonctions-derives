@@ -55,10 +55,12 @@ class Fonction(QObject, ABC, metaclass=MetaClasseFonction):
         else :
             raise ValueError("Couleur impossible")
 
-    @property
-    def x(self):
-        return self.__x
+    # Accesseur de la variable
+    @classmethod
+    def x(cls):
+        return cls.__x
 
+    # Validateur de la couleur
     @staticmethod
     def valider_couleur(couleur : str):
         return mcolors.is_color_like(couleur)
