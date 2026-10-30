@@ -1,4 +1,5 @@
 import sympy as sp
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.uic import loadUi
 
@@ -6,6 +7,8 @@ from fonction_principale import FonctionPrincipale
 from list_fonction import ListFonction
 
 class FenetreListFonction(QDockWidget):
+
+    fichiers_clique = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -23,8 +26,13 @@ class FenetreListFonction(QDockWidget):
 
         #Connexion du signal textChanged pour valider la saisie en temps réel
         self.lineEdit.textChanged.connect(self.valider_saisie)
+
         #Désactiver le bouton Ajouter par défaut au démarrage (champ vide)
         self.ajouter.setEnabled(False)
+
+        # Connexion du bouton de ton interface UI au signal
+        if hasattr(self, 'ajouterFichiers'):
+            self.ajouterFichiers.clicked.connect(self.emettre_signal_fichiers)
 
     @property
     def modele(self):
@@ -71,3 +79,7 @@ class FenetreListFonction(QDockWidget):
         if index_selectionne.isValid():
             ligne = index_selectionne.row()
             self.__modele.remove_item(ligne)
+
+    def emettre_signal_fichiers(self):
+        """Émet le signal personnalisé vers la fenêtre principale."""
+        self.fichiers_clique.emit()

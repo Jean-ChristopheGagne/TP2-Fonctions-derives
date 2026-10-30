@@ -1,8 +1,11 @@
+import json
+import warnings
+
 import sympy as sp
 from PyQt6.QtCore import QAbstractListModel, Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
-    QComboBox
+    QComboBox, QFileDialog, QPushButton
 from PyQt6.uic import loadUi
 
 from canvas import Canvas
@@ -27,11 +30,14 @@ class FenetrePrincipale(QMainWindow):
     __couleur: QColorDialog
     slider: QSlider
     __fonctionListView: QAbstractListModel
+    ajouterFichiers: QPushButton
 
 
     def __init__(self):
         super().__init__()
         loadUi("ui/tp2derivee.ui", self)
+
+        warnings.filterwarnings('ignore', category=RuntimeWarning)
 
         # Définir une taille initiale plus grande (largeur, hauteur en pixels)
         self.resize(1200, 800)
@@ -91,6 +97,10 @@ class FenetrePrincipale(QMainWindow):
         self.fonctionEdit.setModel(self.__fonctionListView)
         self.fonctionEdit.currentTextChanged.connect(self.changement_fonction)
 
+        # Connexion du bouton Fichiers situé dans l'éditeur dockable
+        if hasattr(self.editeurFonction, 'ajouterFichiers'):
+            self.editeurFonction.ajouterFichiers.clicked.connect(self.ouvrir_fichier_json)
+
     @property
     def model(self):
         return self.__model
@@ -143,33 +153,45 @@ class FenetrePrincipale(QMainWindow):
             print(f"Erreur dans l'expression de la fonction ('{texte}') : {e}")
 
     def mettre_a_jour_variation(self, valeur_x: float):
-        """Calcule et affiche le taux de variation, le point de tangeance pour un x donné et la dérivée dans les labels appropriés."""
+        """Calcule et affiche le taux de variation, le point de tangence et la dérivée en évitant les erreurs de domaine."""
         try:
+            # Gestion du point de tangence (x, y) de la fonction principale
+            if self.__model.fonction_principale.fonction is not None:
+                expr_orig = self.__model.fonction_principale.fonction
+
+                # Évaluation sécurisée pour éviter les erreurs de domaine (ex: log(0) ou sqrt négatif)
+                try:
+                    y_val_complex = expr_orig.subs(self.__model.x, valeur_x).evalf()
+                    # Si le résultat est complexe (ex: racine d'un nombre négatif), on gère ou on ignore
+                    if y_val_complex.is_real:
+                        y_val = float(y_val_complex)
+                        texte_tangeance = f"({valeur_x:.2f} ; {y_val:.2f})"
+                        self.labelTangeance.setText(texte_tangeance)
+                    else:
+                        self.labelTangeance.setText("Indéfini (complexe)")
+                except Exception:
+                    self.labelTangeance.setText("Indéfini")
+            else:
+                self.labelTangeance.setText("")
+
             # Vérifie si la fonction dérivée existe dans le modèle
             if self.__model.fonction_derivee.fonction is not None:
-                # Utilise la méthode de la classe FonctionDerivee pour évaluer en un point
                 derivee_obj = self.__model.fonction_derivee
-                # On évalue la dérivée et on s'assure d'avoir un float
-                taux = float(derivee_obj.tan_un_point(valeur_x))
-
-                # Affichage dans labelVariation
-                texte_affiche = f"x = {valeur_x:.2f}) : {taux:.5f}"
-                self.labelVariation.setText(texte_affiche)
+                try:
+                    taux_complex = derivee_obj.tan_un_point(valeur_x)
+                    if hasattr(taux_complex, 'is_real') and taux_complex.is_real:
+                        taux = float(taux_complex)
+                        self.labelVariation.setText(f"x = {valeur_x:.2f}) : {taux:.5f}")
+                    else:
+                        # Si c'est déjà un float ou évaluable
+                        taux = float(taux_complex)
+                        self.labelVariation.setText(f"x = {valeur_x:.2f}) : {taux:.5f}")
+                except Exception:
+                    self.labelVariation.setText(f"x = {valeur_x:.2f}) : Indéfini")
             else:
                 self.labelVariation.setText(f"x = {valeur_x}")
 
-            # Gestion du point de tangence (x, y) de la fonction principale
-            if self.__model.fonction_principale.fonction is not None:
-                # On évalue la fonction d'origine pour trouver y à partir de x
-                expr_orig = self.__model.fonction_principale.fonction
-                y_val = float(expr_orig.subs(self.__model.x, valeur_x))
-
-                # Affichage dans labelTangeance
-                texte_tangeance = f"({valeur_x:.2f} ; {y_val:.2f})"
-                self.labelTangeance.setText(texte_tangeance)
-            else:
-                self.labelTangeance.setText("")
-                #Affichage labelDerivee
+            # Affichage labelDerivee
             if self.__model.fonction_derivee.fonction is not None:
                 expr_deriv = self.__model.fonction_derivee.fonction
                 self.labelDerivee.setText(f"{expr_deriv}")
@@ -178,7 +200,6 @@ class FenetrePrincipale(QMainWindow):
 
         except Exception as e:
             print(f"Erreur lors de la mise à jour des labels : {e}")
-
     def ajuster_limites_slider(self):
         """Ajuste les bornes du slider en multipliant par le facteur de 5 décimales."""
         min_val = self.SpinXmin.value()
@@ -206,3 +227,29 @@ class FenetrePrincipale(QMainWindow):
             valeur_x = 0.0
 
         self.mettre_a_jour_variation(valeur_x)
+
+    def ouvrir_fichier_json(self):
+        """Ouvre l'explorateur de fichiers pour sélectionner un JSON et l'ajoute au modèle."""
+        chemin_fichier, _ = QFileDialog.getOpenFileName(
+            self, "Ouvrir un fichier de fonctions JSON", "", "Fichiers JSON (*.json);;Tous les fichiers (*)"
+        )
+
+        if chemin_fichier:
+            try:
+                with open(chemin_fichier, 'r', encoding='utf-8') as f:
+                    donnees = json.load(f)
+
+                for item in donnees:
+                    expr_str = item.get("expression")
+                    couleur = item.get("couleur", "blue")
+
+                    if expr_str:
+                        expr = sp.sympify(expr_str)
+                        nouvelle_fonction = FonctionPrincipale(expr, couleur)
+
+                        # Ajout au modèle partagé (met à jour instantanément la ListView et le ComboBox)
+                        self.editeurFonction.modele.add_item(nouvelle_fonction)
+
+                print("Fichier JSON chargé avec succès !")
+            except Exception as e:
+                print(f"Erreur lors du chargement du fichier JSON : {e}")

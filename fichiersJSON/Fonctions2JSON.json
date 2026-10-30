@@ -1,0 +1,6 @@
+[
+  {"expression": "x**3 - 3*x", "couleur": "magenta"},
+  {"expression": "log(x)", "couleur": "cyan"},
+  {"expression": "tan(x)", "couleur": "brown"},
+  {"expression": "sqrt(x)", "couleur": "olive"}
+]

@@ -1,0 +1,7 @@
+[
+  {"expression": "x**2", "couleur": "blue"},
+  {"expression": "sin(x)", "couleur": "red"},
+  {"expression": "2*x + 3", "couleur": "green"},
+  {"expression": "exp(x)", "couleur": "purple"},
+  {"expression": "cos(x)", "couleur": "orange"}
+]
