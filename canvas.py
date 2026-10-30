@@ -46,8 +46,6 @@ class Canvas(FigureCanvasQTAgg):
                 # Récupération de l'expression SymPy de la fonction principale
                 # Récupère l'expression
                 expr_princ = self.__model.fonction_principale.fonction
-                # Récupère la couleur
-                couleur_princ = self.__model.fonction_principale.couleur
 
                 # Tracé de la fonction originale sur le premier axe
                 # Lambdify SymPy
