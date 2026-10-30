@@ -22,7 +22,7 @@ class ListFonction(QAbstractListModel):
 
         fonction_obj = self.__fonctions[index.row()]
 
-        # On retourne uniquement la chaîne de caractères de l'expression SymPy
+        # On retourne uniquement la chaîne de caractères brute de l'expression SymPy (ex: x**2)
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             return str(fonction_obj.fonction_principale)
 

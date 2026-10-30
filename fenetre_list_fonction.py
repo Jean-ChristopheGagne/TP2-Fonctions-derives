@@ -2,7 +2,7 @@ import sympy as sp
 from PyQt6.QtWidgets import QDockWidget
 from PyQt6.uic import loadUi
 
-from fonction import Fonction
+from fonction_principale import FonctionPrincipale
 from list_fonction import ListFonction
 
 class FenetreListFonction(QDockWidget):
@@ -51,16 +51,16 @@ class FenetreListFonction(QDockWidget):
             self.ajouter.setEnabled(False)
 
     def ajouter_fonction(self):
-        """Ajoute la fonction validée au modèle."""
         texte = self.lineEdit.text().strip()
         if not texte:
             return
+
         try:
             expr = sp.sympify(texte)
-            nouvelle_fonction = Fonction(expr, "blue")
+            nouvelle_fonction = FonctionPrincipale(expr, "blue")
             self.__modele.add_item(nouvelle_fonction)
             self.lineEdit.clear()
-            #Désactiver à nouveau le bouton après l'ajout réussi
+            # Désactiver à nouveau le bouton après l'ajout réussi
             self.ajouter.setEnabled(False)
         except Exception as e:
             print(f"Erreur : {e}")
