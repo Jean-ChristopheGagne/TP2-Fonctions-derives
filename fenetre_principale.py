@@ -124,12 +124,11 @@ class FenetrePrincipale(QMainWindow):
         self.SpinXmin.setMaximum(valeur - 0.1)
         self.__model.x_max = valeur
 
-    def changement_fonction(self):
+    def changement_fonction(self, texte: str):
         """Récupère le texte de l'input, le convertit en SymPy et redessine."""
-        texte = self.fonctionEdit.currentText()
         try:
             couleur_actuelle = self.__model.fonction_principale.couleur
-            if texte.strip() == "":
+            if not texte or texte.strip() == "":
                 # On assigne une FonctionPrincipale vide
                 self.__model.fonction_principale = FonctionPrincipale(None, couleur_actuelle)
             else:
@@ -141,7 +140,7 @@ class FenetrePrincipale(QMainWindow):
             self.__canvas.dessiner()
         except Exception as e:
             self.fonctionEdit.setStyleSheet("background-color: #ffcccc;")
-            print(f"Erreur dans l'expression de la fonction : {e}")
+            print(f"Erreur dans l'expression de la fonction ('{texte}') : {e}")
 
     def mettre_a_jour_variation(self, valeur_x: float):
         """Calcule et affiche le taux de variation, le point de tangeance pour un x donné et la dérivée dans les labels appropriés."""
@@ -170,8 +169,7 @@ class FenetrePrincipale(QMainWindow):
                 self.labelTangeance.setText(texte_tangeance)
             else:
                 self.labelTangeance.setText("")
-
-            # Gestion de l'affichage de la fonction dérivée dans labelDerivee
+                #Affichage labelDerivee
             if self.__model.fonction_derivee.fonction is not None:
                 expr_deriv = self.__model.fonction_derivee.fonction
                 self.labelDerivee.setText(f"{expr_deriv}")

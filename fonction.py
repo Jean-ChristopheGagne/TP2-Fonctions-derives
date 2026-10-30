@@ -1,13 +1,11 @@
-from abc import ABC, ABCMeta, abstractmethod
-from typing import override
-
+from abc import ABC, ABCMeta
 import sympy as sp
 from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.sip import wrappertype
 from sympy import Expr
 import matplotlib.colors as mcolors
 
-# 1. Définition de la métaclasse pour résoudre le conflit PyQt6 (wrappertype) et ABC (ABCMeta)
+# Définition de la métaclasse pour résoudre le conflit PyQt6 (wrappertype) et ABC (ABCMeta)
 class MetaClasseFonction(wrappertype, ABCMeta):
     pass
 
@@ -15,14 +13,11 @@ class Fonction(QObject, ABC, metaclass=MetaClasseFonction):
 
     # Définition du signal personnalisé
     changed = pyqtSignal()
-
     # Fonction décrite par l'objet
     _fonction : Expr
-
     # Couleur de la fonction
     _couleur : str
-
-    # Variable indépendante de tous les fonctions : la valeur ne doit pas être modifié
+    # Variable indépendante de toutes les fonctions : la valeur ne doit pas être modifiée
     __x : Expr = sp.symbols("x")
 
     # Constructeur de Fonction avec la fonction et sa couleur
@@ -67,10 +62,3 @@ class Fonction(QObject, ABC, metaclass=MetaClasseFonction):
     @staticmethod
     def valider_couleur(couleur : str):
         return mcolors.is_color_like(couleur)
-
-    # repr de Fonction avec tout les valeurs de attibut.
-    # Cette méthode doit être implémenté dans les classes inférieur
-    @abstractmethod
-    @override
-    def __repr__(self):
-        return f"fonction : {self.fonction} | couleur : {self.couleur}"
