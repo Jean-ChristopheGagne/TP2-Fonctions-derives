@@ -1,9 +1,14 @@
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractListModel
 
 from fonction import Fonction
+from fonction_couple import FonctionCouple
 
 
 class ListFonction(QAbstractListModel):
+
+    # Liste des fonctions
+    __fonctions : list[FonctionCouple]
+
     def __init__(self, fonctions=None):
         super().__init__()
         self.__fonctions = fonctions if fonctions is not None else []
@@ -11,7 +16,7 @@ class ListFonction(QAbstractListModel):
     def rowCount(self, parent=QModelIndex()):
         return len(self.__fonctions)
 
-    def data(self, index, role):
+    def data(self, index, role = Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.__fonctions)):
             return None
 
@@ -19,14 +24,14 @@ class ListFonction(QAbstractListModel):
 
         # On retourne uniquement la chaîne de caractères brute de l'expression SymPy (ex: x**2)
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
-            return str(fonction_obj.fonction)
+            return str(fonction_obj.fonction_principale)
 
         elif role == Qt.ItemDataRole.ToolTipRole:
-            return f"Couleur: {fonction_obj.couleur}"
+            return f"Couleur: {fonction_obj.fonction_principale.couleur}"
 
         return None
 
-    def add_item(self, item: Fonction):
+    def add_item(self, item: FonctionCouple):
         self.beginInsertRows(QModelIndex(), len(self.__fonctions), len(self.__fonctions))
         self.__fonctions.append(item)
         self.endInsertRows()
@@ -40,10 +45,10 @@ class ListFonction(QAbstractListModel):
     def flags(self, index):
         return super().flags(index) | Qt.ItemFlag.ItemIsEditable
 
-    def setData(self, index, valeur, role=Qt.ItemDataRole.EditRole):
-        if role == Qt.ItemDataRole.EditRole and valeur and index.isValid():
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
+        if role == Qt.ItemDataRole.EditRole and value and index.isValid():
             fx = self.__fonctions[index.row()]
-            fx.fonction = str(valeur)
+            fx.fonction_principale = str(value)
             self.dataChanged.emit(index, index, [role])
             return True
         return False

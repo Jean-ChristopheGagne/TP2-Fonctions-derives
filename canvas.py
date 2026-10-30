@@ -36,7 +36,7 @@ class Canvas(FigureCanvasQTAgg):
                 couleur_princ = self.__model.fonction_principale.couleur
 
                 # Tracé de la fonction originale sur le premier axe
-                f_numerique = sp.lambdify(self.__model.x, expr_princ, "numpy")
+                f_numerique = sp.lambdify(FonctionCouple.x(), expr_princ, "numpy")
                 y_orig = f_numerique(x_vals)
 
                 # Gestion du cas où f(x) est une constante
@@ -52,7 +52,7 @@ class Canvas(FigureCanvasQTAgg):
                     expr_derivee = self.__model.fonction_derivee.fonction
                     couleur_deriv = self.__model.fonction_derivee.couleur
 
-                    f_derivee_numerique = sp.lambdify(self.__model.x, expr_derivee, "numpy")
+                    f_derivee_numerique = sp.lambdify(FonctionCouple.x(), expr_derivee, "numpy")
                     y_deriv = f_derivee_numerique(x_vals)
 
                     if isinstance(y_deriv, (int, float, np.number)):
