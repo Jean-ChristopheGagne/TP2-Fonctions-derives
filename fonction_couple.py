@@ -52,7 +52,7 @@ class FonctionCouple(QObject):
         if value is not None and value.fonction is not None:
             self.__fonction_derivee.changer_fonc_orig(value.fonction)
         else:
-            self.__fonction_derivee.changer_fonc_orig(None)
+            self.__fonction_derivee.changer_fonc_orig(sp.Integer(0))
         self.changed.emit()
 
     # Accesseur de la fonction dérivée
@@ -153,3 +153,11 @@ class FonctionCouple(QObject):
     @override
     def __repr__(self):
         return f"Fonction de base : {self.fonction_principale.fonction} | Couleur fonction de base {self.fonction_principale.couleur} | Fonction dérivée {self.fonction_derivee.fonction} | Couleur fonction dérivée : {self.fonction_derivee.couleur} | x min : {self.x_min} | x max : {self.x_max}"
+
+    def changer_fonction_principale(self, f_str):
+        """
+        Cette méthode permet de changer la fonction principale avec la nouvelle String de la fonction
+        :param f_str: la str de fonction principale
+        """
+        couleur_princ = self.fonction_principale.couleur
+        self.fonction_principale = FonctionPrincipale(FonctionCouple.definir_fonction_principale(f_str), couleur_princ)

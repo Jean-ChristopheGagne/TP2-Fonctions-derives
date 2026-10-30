@@ -4,6 +4,7 @@ from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
     QComboBox
 from PyQt6.uic import loadUi
+from sympy import Expr
 
 from canvas import Canvas
 from fenetre_list_fonction import FenetreListFonction
@@ -198,21 +199,7 @@ class FenetrePrincipale(QMainWindow):
         """Récupère le texte de l'input, le convertit en SymPy et redessine."""
         # Try convert
         try:
-            # Sauve couleur
-            couleur_actuelle = self.__model.fonction_principale.couleur
-            # Si vide
-            if not texte or texte.strip() == "":
-                # On assigne une FonctionPrincipale vide
-                # Crée vide
-                self.__model.fonction_principale = FonctionPrincipale(None, couleur_actuelle)
-            # Sinon
-            else:
-                # Sympify
-                expr = sp.sympify(texte)
-                # On met à jour via une instance de FonctionPrincipale
-                # Crée principale
-                self.__model.fonction_principale = FonctionPrincipale(expr, couleur_actuelle)
-
+            self.__model.changer_fonction_principale(texte)
             # Style normal
             self.fonctionEdit.setStyleSheet("")
             # Redessine
