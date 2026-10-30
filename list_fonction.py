@@ -24,7 +24,7 @@ class ListFonction(QAbstractListModel):
 
         # On retourne uniquement la chaîne de caractères brute de l'expression SymPy (ex: x**2)
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
-            return str(fonction_obj.fonction_principale)
+            return str(fonction_obj.fonction)
 
         elif role == Qt.ItemDataRole.ToolTipRole:
             return f"Couleur: {fonction_obj.fonction_principale.couleur}"
