@@ -331,27 +331,42 @@ class FenetrePrincipale(QMainWindow):
         # Met à jour variation
         self.mettre_a_jour_variation(valeur_x)
 
-        # Ouvre l'explorateur de fichiers pour charger un fichier JSON de fonctions   (utilisation de l'IA)
+    # Ouvre l'explorateur de fichiers pour charger un fichier JSON de fonctions   (utilisation de l'IA)
     def ouvrir_fichier_json(self):
-            """Ouvre l'explorateur de fichiers pour sélectionner un JSON et l'ajoute au modèle."""
-            chemin_fichier, _ = QFileDialog.getOpenFileName(
-                self, "Ouvrir un fichier de fonctions JSON", "", "Fichiers JSON (*.json);;Tous les fichiers (*)"
-            )
+        """Ouvre l'explorateur de fichiers pour sélectionner un JSON et l'ajoute au modèle."""
+        # Récupère chemin
+        chemin_fichier, _ = QFileDialog.getOpenFileName(
+            self, "Ouvrir un fichier de fonctions JSON", "", "Fichiers JSON (*.json);;Tous les fichiers (*)"
+        )
 
-            if chemin_fichier:
-                try:
-                    with open(chemin_fichier, 'r', encoding='utf-8') as f:
-                        donnees = json.load(f)
+        # Si chemin existe
+        if chemin_fichier:
+            # Try lecture
+            try:
+                # Ouvre fichier utf-8
+                with open(chemin_fichier, 'r', encoding='utf-8') as f:
+                    # Charge JSON
+                    donnees = json.load(f)
 
-                    for item in donnees:
-                        expr_str = item.get("expression")
-                        couleur = item.get("couleur", "blue")
+                # Boucle données
+                for item in donnees:
+                    # Récupère expression
+                    expr_str = item.get("expression")
+                    # Récupère couleur
+                    couleur = item.get("couleur", "blue")
 
-                        if expr_str:
-                            expr = sp.sympify(expr_str)
-                            nouvelle_fonction = FonctionPrincipale(expr, couleur)
-                            self.editeurFonction.modele.add_item(nouvelle_fonction)
+                    # Si expression existe
+                    if expr_str:
+                        # Sympify
+                        expr = sp.sympify(expr_str)
+                        # Crée fonction
+                        nouvelle_fonction = FonctionPrincipale(expr, couleur)
+                        # Ajoute modèle
+                        self.editeurFonction.modele.add_item(nouvelle_fonction)
 
-                    print("Fichier JSON chargé avec succès !")
-                except Exception as e:
-                    print(f"Erreur lors du chargement du fichier JSON : {e}")
+                # Print succès
+                print("Fichier JSON chargé avec succès !")
+            # Saisit erreur
+            except Exception as e:
+                # Print erreur
+                print(f"Erreur lors du chargement du fichier JSON : {e}")
