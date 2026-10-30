@@ -163,7 +163,7 @@ class FenetrePrincipale(QMainWindow):
             if self.__model.fonction_principale.fonction is not None:
                 # On évalue la fonction d'origine pour trouver y à partir de x
                 expr_orig = self.__model.fonction_principale.fonction
-                y_val = float(expr_orig.subs(self.__model.x, valeur_x))
+                y_val = float(expr_orig.subs(FonctionCouple.x(), valeur_x))
 
                 # Affichage dans labelTangeance
                 texte_tangeance = f"({valeur_x:.2f} ; {y_val:.2f})"
