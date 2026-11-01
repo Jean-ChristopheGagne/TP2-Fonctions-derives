@@ -11,16 +11,18 @@ class ListFonction(QAbstractListModel):
     # Liste des fonctions
     __fonctions : list[FonctionCouple]
 
-    # Conctructeur de la classe
+    # Constructeur
     def __init__(self, fonctions=None):
         super().__init__()
         self.__fonctions = fonctions if fonctions is not None else []
 
     @override
+    # Nombre de lignes
     def rowCount(self, parent=QModelIndex()):
         return len(self.__fonctions)
 
     @override
+    # Données de la cellule
     def data(self, index, role = Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.__fonctions)):
             return None
@@ -36,11 +38,13 @@ class ListFonction(QAbstractListModel):
 
         return None
 
+    # Ajout d'un élément
     def add_item(self, item: FonctionCouple):
         self.beginInsertRows(QModelIndex(), len(self.__fonctions), len(self.__fonctions))
         self.__fonctions.append(item)
         self.endInsertRows()
 
+    # Suppression d'un élément
     def remove_item(self, index_row: int):
         if 0 <= index_row < len(self.__fonctions):
             self.beginRemoveRows(QModelIndex(), index_row, index_row)
@@ -48,10 +52,12 @@ class ListFonction(QAbstractListModel):
             self.endRemoveRows()
 
     @override
+    # Drapeaux des éléments
     def flags(self, index):
         return super().flags(index) | Qt.ItemFlag.ItemIsEditable
 
     @override
+    # Modification d'une donnée
     def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         if role == Qt.ItemDataRole.EditRole and value and index.isValid():
             fx = self.__fonctions[index.row()]
