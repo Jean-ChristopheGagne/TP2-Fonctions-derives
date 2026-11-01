@@ -5,13 +5,13 @@ import sympy as sp
 from PyQt6.QtCore import QAbstractListModel, Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
-    QComboBox, QFileDialog, QCheckBox
+    QComboBox, QFileDialog, QCheckBox, QMessageBox
 from PyQt6.uic import loadUi
-from sympy import Expr
 
 from canvas import Canvas
 from fenetre_list_fonction import FenetreListFonction
 from fonction_couple import FonctionCouple
+from fonction_derivee import FonctionDerivee
 from fonction_principale import FonctionPrincipale
 
 
@@ -91,13 +91,13 @@ class FenetrePrincipale(QMainWindow):
         self.SpinXmax.setValue(10.0)
         # Permettre aux SpinBox d'accepter des nombres négatifs
         # Min min
-        self.SpinXmin.setMinimum(-500.0)
+        self.SpinXmin.setMinimum(-10.0)
         # Min max
-        self.SpinXmin.setMaximum(500.0)
+        self.SpinXmin.setMaximum(10.0)
         # Max min
-        self.SpinXmax.setMinimum(-500.0)
+        self.SpinXmax.setMinimum(-10.0)
         # Max max
-        self.SpinXmax.setMaximum(500.0)
+        self.SpinXmax.setMaximum(10.0)
         # Connecte min
         self.SpinXmin.valueChanged.connect(self.changement_Xmin)
         # Connecte max
@@ -166,24 +166,28 @@ class FenetrePrincipale(QMainWindow):
         # Dialogue couleur
         couleur = QColorDialog.getColor()
         # Si valide
-        if couleur.isValid():
-            # Modifie uniquement la couleur de la fonction principale
-            # Assigne couleur
+        # Modifie uniquement la couleur de la fonction principale
+        # Assigne couleur
+        try :
             self.__model.fonction_principale.couleur = couleur.name()
             # Redessine
             self.__canvas.dessiner()
+        except ValueError as e :
+            QMessageBox.warning(self, "Erreur de sélection de couleur", str(e))
 
     # Change couleur dérivée
     def changement_couleur_derivee(self):
         # Dialogue couleur
         couleur = QColorDialog.getColor()
         # Si valide
-        if couleur.isValid():
-            # Modifie uniquement la couleur de la fonction dérivée
-            # Assigne couleur
+        # Modifie uniquement la couleur de la fonction principale
+        # Assigne couleur
+        try:
             self.__model.fonction_derivee.couleur = couleur.name()
             # Redessine
             self.__canvas.dessiner()
+        except ValueError as e:
+            QMessageBox.warning(self, "Erreur de sélection de couleur", str(e))
 
     # Bascule éditeur
     def basculer_affichage_editeur(self):
@@ -231,6 +235,7 @@ class FenetrePrincipale(QMainWindow):
     # Met à jour variation
     def mettre_a_jour_variation(self, valeur_x: float):  # Aide de l'IA à certains points
         # Calcule et affiche le taux de variation, le point de tangence et la dérivée dans les labels appropriés
+        derivee_obj : FonctionDerivee
         try:
             # Vérifie si la fonction dérivée existe dans le modèle
             if self.__model.fonction_derivee.fonction is not None:

@@ -46,6 +46,11 @@ class FonctionCouple(QObject):
         self.__fonction_principale = FonctionPrincipale(fonc_princ_expr, couleur_f_princ)
         self.__fonction_derivee = FonctionDerivee(fonc_princ_expr, couleur_f_der)
 
+        # validation des couleurs
+        self.valider_couleurs_fonction()
+        self.fonction_principale.changed.connect(self.valider_couleurs_fonction)
+        self.fonction_derivee.changed.connect(self.valider_couleurs_fonction)
+
     # Accesseur de la fonction principale
     @property
     def fonction_principale(self):
@@ -163,11 +168,11 @@ class FonctionCouple(QObject):
 
     # Validateur du x_min
     def valider_x_min(self, x_min : float) -> bool:
-        return x_min < self.x_max
+        return x_min <= self.x_max
 
     # Validateur du x_max
     def valider_x_max(self, x_max : float) -> bool:
-        return x_max > self.x_min
+        return x_max >= self.x_min
 
     # repr de la classe FonctionCouple
     @override
@@ -181,3 +186,8 @@ class FonctionCouple(QObject):
         """
         couleur_princ = self.fonction_principale.couleur
         self.fonction_principale = FonctionPrincipale(FonctionCouple.definir_fonction_principale(f_str), couleur_princ)
+
+    # Cette méthode valide que les couleurs de la fonction principale et de la fonction dérivée ne soient pas équivalentes
+    def valider_couleurs_fonction(self):
+        if self.fonction_principale.couleur == self.fonction_derivee.couleur:
+            raise ValueError("Couleurs de la fonction principale et de la fonction dérivée équivalentes")
