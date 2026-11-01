@@ -64,3 +64,28 @@ class ListFonction(QAbstractListModel):
             self.dataChanged.emit(index, index, [role])
             return True
         return False
+
+    # Convertit la liste des fonctions en dictionnaires pour le JSON        # Aide de l'IA
+    def to_json_data(self) -> list[dict]:
+        # Initialise une liste vide pour stocker les données à sauvegarder
+        data = []
+        # Vérifie si l'attribut __fonctions existe et contient des éléments
+        if hasattr(self, '_ListFonction__fonctions'):
+            # Récupère la liste interne des fonctions
+            elements = self.__fonctions
+        else:
+            # Valeur par défaut vide si l'attribut a un autre nom
+            elements = []
+        # Parcourt chaque objet fonction présent dans la liste
+        for fx in elements:
+            # Vérifie que l'objet possède bien une expression et une couleur
+            if hasattr(fx, 'fonction') and fx.fonction is not None:
+                # Ajoute un dictionnaire contenant l'expression textuelle et la couleur
+                data.append({
+                    # Convertit l'expression SymPy en chaîne de caractères
+                    "expression": str(fx.fonction),
+                    # Récupère la couleur associée à la fonction
+                    "couleur": fx.couleur if hasattr(fx, 'couleur') else "blue"
+                })
+        # Retourne la liste complète des dictionnaires prêts pour le JSON
+        return data

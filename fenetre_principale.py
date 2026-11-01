@@ -1,4 +1,6 @@
 import json
+import os
+
 import sympy as sp
 from PyQt6.QtCore import QAbstractListModel, Qt
 from PyQt6.QtGui import QAction
@@ -149,8 +151,8 @@ class FenetrePrincipale(QMainWindow):
         # Connexion du signal personnalisé de l'éditeur vers la méthode d'ouverture de fichier
         self.editeurFonction.fichiers_clique.connect(self.ouvrir_fichier_json)
 
-        # # Appelle la méthode pour charger les fonctions depuis le JSON dès le lancement
-        # self.charger_json_au_demarrage()
+        # Appelle la méthode pour charger les fonctions depuis le JSON dès le lancement
+        self.charger_json_au_demarrage()
 
     # Propriété modèle
     @property
@@ -352,46 +354,6 @@ class FenetrePrincipale(QMainWindow):
         # Transmet l'état de la case (True/False) au modèle global
         self.__model.grille_visible = etat
 
-    # Ouvre l'explorateur de fichiers pour charger un fichier JSON de fonctions   (utilisation de l'IA)
-    def ouvrir_fichier_json(self):
-        """Ouvre l'explorateur de fichiers pour sélectionner un JSON et l'ajoute au modèle."""
-        # Récupère chemin
-        chemin_fichier, _ = QFileDialog.getOpenFileName(
-            self, "Ouvrir un fichier de fonctions JSON", "", "Fichiers JSON (*.json);;Tous les fichiers (*)"
-        )
-
-        # Si chemin existe
-        if chemin_fichier:
-            # Try lecture
-            try:
-                # Ouvre fichier utf-8
-                with open(chemin_fichier, 'r', encoding='utf-8') as f:
-                    # Charge JSON
-                    donnees = json.load(f)
-
-                # Boucle données
-                for item in donnees:
-                    # Récupère expression
-                    expr_str = item.get("expression")
-                    # Récupère couleur
-                    couleur = item.get("couleur", "blue")
-
-                    # Si expression existe
-                    if expr_str:
-                        # Sympify
-                        expr = sp.sympify(expr_str)
-                        # Crée fonction
-                        nouvelle_fonction = FonctionPrincipale(expr, couleur)
-                        # Ajoute modèle
-                        self.editeurFonction.modele.add_item(nouvelle_fonction)
-
-                # Print succès
-                print("Fichier JSON chargé avec succès !")
-            # Saisit erreur
-            except Exception as e:
-                # Print erreur
-                print(f"Erreur lors du chargement du fichier JSON : {e}")
-
     def formater_expression_jolie(self, expr_str: str):          # Aide de l'IA
         if not expr_str:
             return ""
@@ -413,43 +375,71 @@ class FenetrePrincipale(QMainWindow):
 
         return texte
 #||||||||||||||||||||||||||||||||||||||||||||   Aide de l'IA   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-    # # Charge la liste des fonctions depuis un fichier JSON au démarrage
-    # def charger_json_au_demarrage(self, chemin_fichier="fonctions.json"):
-    #     # Importe le module os pour vérifier l'existence du fichier
-    #     import os
-    #     # Vérifie si le fichier JSON par défaut existe sur le disque
-    #     if os.path.exists(chemin_fichier):
-    #         # Ouvre le fichier en mode lecture avec l'encodage utf-8
-    #         with open(chemin_fichier, 'r', encoding='utf-8') as f:
-    #             # Charge le contenu JSON dans la variable donnees
-    #             donnees = json.load(f)
-    #         # Parcourt chaque élément contenu dans le fichier JSON
-    #         for item in donnees:
-    #             # Extrait l'expression textuelle de la fonction
-    #             expr_str = item.get("expression")
-    #             # Extrait la couleur ou utilise le bleu par défaut
-    #             couleur = item.get("couleur", "blue")
-    #             # Vérifie que l'expression n'est pas vide
-    #             if expr_str:
-    #                 # Convertit la chaîne de texte en expression SymPy
-    #                 expr = sp.sympify(expr_str)
-    #                 # Crée un nouvel objet FonctionPrincipale
-    #                 nouvelle_fonction = FonctionPrincipale(expr, couleur)
-    #                 # Ajoute la fonction au modèle de la liste
-    #                 self.editeurFonction.modele.add_item(nouvelle_fonction)
-    #
-    # # Sauvegarde la liste actuelle des fonctions dans un fichier JSON
-    # def sauvegarder_en_json(self, chemin_fichier="fonctions.json"):
-    #     # Ouvre le fichier en mode écriture avec l'encodage utf-8
-    #     with open(chemin_fichier, 'w', encoding='utf-8') as f:
-    #         # Récupère les données formatées depuis le modèle de la liste
-    #         donnees = self.editeurFonction.modele.to_json_data()
-    #         # Écrit les données dans le fichier JSON avec une indentation de 4
-    #         json.dump(donnees, f, indent=4, ensure_ascii=False)
-    #
-    # # Intercepte l'événement de fermeture de la fenêtre principale
-    # def closeEvent(self, event):
-    #     # Sauvegarde automatiquement la liste dans le fichier JSON en quittant
-    #     self.sauvegarder_en_json()
-    #     # Accepte l'événement pour fermer l'application normalement
-    #     event.accept()
+    # Méthode commune pour importer et charger les fonctions depuis n'importe quel fichier JSON
+    def importer_donnees_json(self, chemin_fichier: str):
+        # Vérifie si le fichier spécifié existe physiquement sur le disque
+        if os.path.exists(chemin_fichier):
+            # Bloc try pour sécuriser la lecture et le traitement du fichier
+            try:
+                # Ouvre le fichier en mode lecture avec l'encodage utf-8
+                with open(chemin_fichier, 'r', encoding='utf-8') as f:
+                    # Charge le contenu JSON dans la variable donnees
+                    donnees = json.load(f)
+                # Parcourt chaque élément contenu dans les données JSON
+                for item in donnees:
+                    # Extrait l'expression textuelle de la fonction
+                    expr_str = item.get("expression")
+                    # Extrait la couleur ou utilise le bleu par défaut
+                    couleur = item.get("couleur", "blue")
+                    # Vérifie que l'expression textuelle n'est pas vide
+                    if expr_str:
+                        # Convertit la chaîne de texte en expression SymPy valide
+                        expr = sp.sympify(expr_str)
+                        # Crée un nouvel objet FonctionPrincipale
+                        nouvelle_fonction = FonctionPrincipale(expr, couleur)
+                        # Ajoute la fonction au modèle de la liste
+                        self.editeurFonction.modele.add_item(nouvelle_fonction)
+                # Affiche un message de succès dans la console
+                print("Chargement du fichier JSON réussi !")
+            # Capture les erreurs en cas de problème de lecture ou de format
+            except Exception as e:
+                # Affiche l'erreur détaillée dans la console
+                print(f"Erreur lors du chargement du fichier JSON : {e}")
+
+    # Charge la liste des fonctions depuis le dossier fichiersJSON au démarrage
+    def charger_json_au_demarrage(self, chemin_fichier="fichiersJSON/fonctions.json"):
+        # Appelle la méthode commune avec le fichier par défaut situé dans le dossier
+        self.importer_donnees_json(chemin_fichier)
+
+    # Sauvegarde la liste actuelle des fonctions dans le dossier fichiersJSON
+    def sauvegarder_en_json(self, chemin_fichier="fichiersJSON/fonctions.json"):
+        # Définit le nom du dossier cible pour les sauvegardes
+        dossier = "fichiersJSON"
+        # Vérifie si le dossier n'existe pas encore sur le disque
+        if not os.path.exists(dossier):
+            # Crée le dossier automatiquement s'il est absent
+            os.makedirs(dossier)
+        # Ouvre le fichier en mode écriture avec l'encodage utf-8
+        with open(chemin_fichier, 'w', encoding='utf-8') as f:
+            # Récupère les données formatées depuis le modèle de la liste
+            donnees = self.editeurFonction.modele.to_json_data()
+            # Écrit les données dans le fichier JSON avec une indentation de 4
+            json.dump(donnees, f, indent=4, ensure_ascii=False)
+
+    # Intercepte l'événement de fermeture de la fenêtre principale
+    def closeEvent(self, event):
+        # Sauvegarde automatiquement la liste dans le dossier en quittant l'application
+        self.sauvegarder_en_json()
+        # Accepte l'événement pour fermer la fenêtre normalement
+        event.accept()
+
+    # Ouvre l'explorateur pour sélectionner un fichier JSON manuellement
+    def ouvrir_fichier_json(self):
+        # Ouvre la boîte de dialogue de sélection de fichier et récupère le chemin
+        chemin_fichier, _ = QFileDialog.getOpenFileName(
+            self, "Ouvrir un fichier de fonctions JSON", "fichiersJSON", "Fichiers JSON (*.json);;Tous les fichiers (*)"
+        )
+        # Vérifie si l'utilisateur a bien sélectionné un fichier
+        if chemin_fichier:
+            # Appelle la méthode commune avec le fichier choisi par l'utilisateur
+            self.importer_donnees_json(chemin_fichier)
