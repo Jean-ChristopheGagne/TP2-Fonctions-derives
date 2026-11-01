@@ -1,9 +1,11 @@
 import json
+import os
+
 import sympy as sp
 from PyQt6.QtCore import QAbstractListModel, Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
-    QComboBox, QFileDialog
+    QComboBox, QFileDialog, QCheckBox
 from PyQt6.uic import loadUi
 from sympy import Expr
 
@@ -43,6 +45,8 @@ class FenetrePrincipale(QMainWindow):
     slider: QSlider
     # Modèle liste
     __fonctionListView: QAbstractListModel
+    # CheckBox pour grille
+    grilleBox: QCheckBox
 
 
     # Init
@@ -117,6 +121,12 @@ class FenetrePrincipale(QMainWindow):
         # Connecte spin max
         self.SpinXmax.valueChanged.connect(self.ajuster_limites_slider)
 
+        # S'assure que la case de la grille est cochée par défaut au démarrage
+        self.grilleBox.setChecked(True)
+
+        # Connecte le signal de changement d'état de la grilleBox à la méthode dédiée
+        self.grilleBox.toggled.connect(self.changer_etat_grille)
+
         # Initialisation de la fenêtre dockable d'édition de fonctions
         # Crée dock
         self.editeurFonction = FenetreListFonction(parent=self)
@@ -141,6 +151,9 @@ class FenetrePrincipale(QMainWindow):
 
         # Connexion du signal personnalisé de l'éditeur vers la méthode d'ouverture de fichier
         self.editeurFonction.fichiers_clique.connect(self.ouvrir_fichier_json)
+
+        # Appelle la méthode pour charger les fonctions depuis le JSON dès le lancement
+        self.charger_json_au_demarrage()
 
     # Propriété modèle
     @property
@@ -216,63 +229,68 @@ class FenetrePrincipale(QMainWindow):
             print(f"Erreur dans l'expression de la fonction ('{texte}') : {e}")
 
     # Met à jour variation
-    def mettre_a_jour_variation(self, valeur_x: float):
-        """Calcule et affiche le taux de variation, le point de tangeance pour un x donné et la dérivée dans les labels appropriés."""
-        # Try eval
+    def mettre_a_jour_variation(self, valeur_x: float):  # Aide de l'IA à certains points
+        # Calcule et affiche le taux de variation, le point de tangence et la dérivée dans les labels appropriés
         try:
             # Vérifie si la fonction dérivée existe dans le modèle
-            # Si dérivée existe
             if self.__model.fonction_derivee.fonction is not None:
-                # Utilise la méthode de la classe FonctionDerivee pour évaluer en un point
-                # Récupère dérivée
+                # Récupère l'objet dérivée
                 derivee_obj = self.__model.fonction_derivee
-                # On évalue la dérivée et on s'assure d'avoir un float
-                # Calcule taux
-                taux = float(derivee_obj.tan_un_point(valeur_x))
+                # Calcule la valeur brute de la pente en ce point
+                valeur_brute = derivee_obj.tan_un_point(valeur_x)
 
-                # Affichage dans labelVariation
-                # Formate texte
-                texte_affiche = f"x = {valeur_x:.2f}) : {taux:.5f}"
-                # Affiche label
-                self.labelVariation.setText(texte_affiche)
-            # Sinon
+                # Tente de convertir en float et d'afficher
+                try:
+                    # Convertit la valeur brute en décimal float
+                    taux = float(valeur_brute)
+                    # Affiche le résultat normal dans le label (2 et 5 chiffres après la virgule)
+                    self.labelVariation.setText(f"x = {valeur_x:.2f} : {taux:.5f}")
+                # Si la conversion plante (ex: nombre complexe ou infini)
+                except:
+                    # Affiche non défini proprement dans le label
+                    self.labelVariation.setText(f"x = {valeur_x:.2f} : Non défini")
+            # Sinon, si aucune dérivée n'existe
             else:
-                # Affiche x simple
+                # Affiche juste la valeur de x
                 self.labelVariation.setText(f"x = {valeur_x}")
 
-            # Gestion du point de tangence (x, y) de la fonction principale
-            # Si principale existe
+            # Gestion du point de tangence (x, y) de la fonction principale (maintenant au bon niveau d'indentation)
             if self.__model.fonction_principale.fonction is not None:
-                # On évalue la fonction d'origine pour trouver y à partir de x
-                # Récupère expression
+                # Récupère l'expression d'origine de la fonction
                 expr_orig = self.__model.fonction_principale.fonction
-                # Calcule y
-                y_val = float(expr_orig.subs(self.__model.x(), valeur_x))
-
-                # Affichage dans labelTangeance
-                # Formate point
-                texte_tangeance = f"({valeur_x:.2f} ; {y_val:.2f})"
-                # Affiche label
-                self.labelTangeance.setText(texte_tangeance)
-            # Sinon
+                # Calcule y pour la valeur de x actuelle
+                y_brut = expr_orig.subs(self.__model.x(), valeur_x)
+                # Tente de convertir y en décimal float
+                try:
+                    # Convertit y en décimal
+                    y_val = float(y_brut)
+                    # Affiche les coordonnées (x, y) dans le label
+                    self.labelTangeance.setText(f"({valeur_x:.2f} ; {y_val:.2f})")
+                # Si la conversion de y échoue (ex: domaine invalide)
+                except:
+                    # Affiche non défini pour le point de tangence
+                    self.labelTangeance.setText(f"({valeur_x:.2f} ; Non défini)")
+            # Sinon, si pas de fonction principale
             else:
-                # Vide label
+                # Vide le label de tangence
                 self.labelTangeance.setText("")
-                #Affichage labelDerivee
-            # Si dérivée existe
+
+            # Affichage de l'expression de la dérivée avec un formatage propre
             if self.__model.fonction_derivee.fonction is not None:
-                # Récupère dérivée
-                expr_deriv = self.__model.fonction_derivee.fonction
-                # Affiche label
-                self.labelDerivee.setText(f"{expr_deriv}")
-            # Sinon
+                # Récupère l'expression brute de la dérivée en texte
+                expr_deriv_brute = str(derivee_obj.fonction)
+                # Applique le formatage visuel pour rendre l'expression plus jolie
+                expr_jolie = self.formater_expression_jolie(expr_deriv_brute)
+                # Affiche l'expression formatée dans le label de la dérivée
+                self.labelDerivee.setText(f"{expr_jolie}")
+            # Sinon, si la dérivée est vide
             else:
-                # Vide label
+                # Vide le label de la dérivée
                 self.labelDerivee.setText("")
 
-        # Saisit erreur
+        # Saisit et intercepte toute autre erreur imprévue
         except Exception as e:
-            # Print erreur
+            # Affiche l'erreur dans la console pour le débogage
             print(f"Erreur lors de la mise à jour des labels : {e}")
 
     # Ajuste limites slider
@@ -318,42 +336,97 @@ class FenetrePrincipale(QMainWindow):
         # Met à jour variation
         self.mettre_a_jour_variation(valeur_x)
 
-    # Ouvre l'explorateur de fichiers pour charger un fichier JSON de fonctions   (utilisation de l'IA)
-    def ouvrir_fichier_json(self):
-        """Ouvre l'explorateur de fichiers pour sélectionner un JSON et l'ajoute au modèle."""
-        # Récupère chemin
-        chemin_fichier, _ = QFileDialog.getOpenFileName(
-            self, "Ouvrir un fichier de fonctions JSON", "", "Fichiers JSON (*.json);;Tous les fichiers (*)"
-        )
+    # Méthode appelée lorsque l'utilisateur coche ou décoche la grilleBox
+    def changer_etat_grille(self, etat: bool):
+        # Transmet l'état de la case (True/False) au modèle global
+        self.__model.grille_visible = etat
 
-        # Si chemin existe
-        if chemin_fichier:
-            # Try lecture
+    def formater_expression_jolie(self, expr_str: str):          # Aide de l'IA
+        if not expr_str:
+            return ""
+
+        # Remplacement des puissances (ex: x**2 -> x² )
+        texte = expr_str.replace("**2", "²").replace("**3", "³")
+
+        # Pour les puissances générales (ex: x**4 -> x⁴)
+        remplacements_exposants = {
+            "**0": "⁰", "**1": "¹", "**2": "²", "**3": "³", "**4": "⁴",
+            "**5": "⁵", "**6": "⁶", "**7": "⁷", "**8": "⁸", "**9": "⁹"
+        }
+        #Fait l'action de remplacer "old" par "new"
+        for k, v in remplacements_exposants.items():
+            texte = texte.replace(k, v)
+
+        # Nettoyage des multiplications superflues (ex: 3*x -> 3x)
+        texte = texte.replace("*", "")
+
+        return texte
+#||||||||||||||||||||||||||||||||||||||||||||   Aide de l'IA   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    # Méthode commune pour importer et charger les fonctions depuis n'importe quel fichier JSON
+    def importer_donnees_json(self, chemin_fichier: str):
+        # Vérifie si le fichier spécifié existe physiquement sur le disque
+        if os.path.exists(chemin_fichier):
+            # Bloc try pour sécuriser la lecture et le traitement du fichier
             try:
-                # Ouvre fichier utf-8
+                # Ouvre le fichier en mode lecture avec l'encodage utf-8
                 with open(chemin_fichier, 'r', encoding='utf-8') as f:
-                    # Charge JSON
+                    # Charge le contenu JSON dans la variable donnees
                     donnees = json.load(f)
-
-                # Boucle données
+                # Parcourt chaque élément contenu dans les données JSON
                 for item in donnees:
-                    # Récupère expression
+                    # Extrait l'expression textuelle de la fonction
                     expr_str = item.get("expression")
-                    # Récupère couleur
+                    # Extrait la couleur ou utilise le bleu par défaut
                     couleur = item.get("couleur", "blue")
-
-                    # Si expression existe
+                    # Vérifie que l'expression textuelle n'est pas vide
                     if expr_str:
-                        # Sympify
+                        # Convertit la chaîne de texte en expression SymPy valide
                         expr = sp.sympify(expr_str)
-                        # Crée fonction
+                        # Crée un nouvel objet FonctionPrincipale
                         nouvelle_fonction = FonctionPrincipale(expr, couleur)
-                        # Ajoute modèle
+                        # Ajoute la fonction au modèle de la liste
                         self.editeurFonction.modele.add_item(nouvelle_fonction)
-
-                # Print succès
-                print("Fichier JSON chargé avec succès !")
-            # Saisit erreur
+                # Affiche un message de succès dans la console
+                print("Chargement du fichier JSON réussi !")
+            # Capture les erreurs en cas de problème de lecture ou de format
             except Exception as e:
-                # Print erreur
+                # Affiche l'erreur détaillée dans la console
                 print(f"Erreur lors du chargement du fichier JSON : {e}")
+
+    # Charge la liste des fonctions depuis le dossier fichiersJSON au démarrage
+    def charger_json_au_demarrage(self, chemin_fichier="fichiersJSON/fonctions.json"):
+        # Appelle la méthode commune avec le fichier par défaut situé dans le dossier
+        self.importer_donnees_json(chemin_fichier)
+
+    # Sauvegarde la liste actuelle des fonctions dans le dossier fichiersJSON
+    def sauvegarder_en_json(self, chemin_fichier="fichiersJSON/fonctions.json"):
+        # Définit le nom du dossier cible pour les sauvegardes
+        dossier = "fichiersJSON"
+        # Vérifie si le dossier n'existe pas encore sur le disque
+        if not os.path.exists(dossier):
+            # Crée le dossier automatiquement s'il est absent
+            os.makedirs(dossier)
+        # Ouvre le fichier en mode écriture avec l'encodage utf-8
+        with open(chemin_fichier, 'w', encoding='utf-8') as f:
+            # Récupère les données formatées depuis le modèle de la liste
+            donnees = self.editeurFonction.modele.to_json_data()
+            # Écrit les données dans le fichier JSON avec une indentation de 4
+            json.dump(donnees, f, indent=4, ensure_ascii=False)
+
+    # Intercepte l'événement de fermeture de la fenêtre principale
+    def closeEvent(self, event):
+        # Sauvegarde automatiquement la liste dans le dossier en quittant l'application
+        self.sauvegarder_en_json()
+        # Accepte l'événement pour fermer la fenêtre normalement
+        event.accept()
+
+    # Ouvre l'explorateur pour sélectionner un fichier JSON manuellement
+    def ouvrir_fichier_json(self):
+        # Ouvre la boîte de dialogue de sélection de fichier et récupère le chemin
+        chemin_fichier, _ = QFileDialog.getOpenFileName(
+            self, "Ouvrir un fichier de fonctions JSON", "fichiersJSON", "Fichiers JSON (*.json);;Tous les fichiers (*)"
+        )
+        # Vérifie si l'utilisateur a bien sélectionné un fichier
+        if chemin_fichier:
+            # Appelle la méthode commune avec le fichier choisi par l'utilisateur
+            self.importer_donnees_json(chemin_fichier)

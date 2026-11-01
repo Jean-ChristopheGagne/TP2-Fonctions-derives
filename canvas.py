@@ -104,10 +104,13 @@ class Canvas(FigureCanvasQTAgg):
         self.__ax[1].set_title("Fonction dérivée")
 
         # Affichage de la grille
+
+        # Récupère l'état d'affichage de la grille depuis le modèle
+        actif_grille = self.__model.grille_visible
         # Grille axe 0
-        self.__ax[0].grid(True)
+        self.__ax[0].grid(actif_grille)
         # Grille axe 1
-        self.__ax[1].grid(True)
+        self.__ax[1].grid(actif_grille)
 
         # Rafraîchissement du canvas Qt
         # Redessine

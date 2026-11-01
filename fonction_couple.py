@@ -24,6 +24,9 @@ class FonctionCouple(QObject):
     # La valeur maximale de x pour laquelle la fonction est définie sur le canvas
     __x_max: float
 
+    # Attribut privé pour stocker l'état d'affichage de la grille
+    __grille_visible: bool
+
     # Définition du signal personnalisé
     changed = pyqtSignal()
 
@@ -32,6 +35,9 @@ class FonctionCouple(QObject):
         super().__init__()
         self.__x_min = 0.0
         self.__x_max = 10.0
+
+        # Initialise l'état de la grille à True par défaut au démarrage
+        self.__grille_visible = True
 
         # Si aucun texte n'est fourni, on initialise à None sans crasher
         fonc_princ_expr = FonctionCouple.definir_fonction_principale(f_str)
@@ -92,6 +98,20 @@ class FonctionCouple(QObject):
             self.changed.emit()
         else:
             raise ValueError("Valeur interdite")
+
+    # Accesseur pour récupérer l'état de la grille
+    @property
+    def grille_visible(self) -> bool:
+        # Retourne la valeur booléenne de la visibilité de la grille
+        return self.__grille_visible
+
+    # Mutteur pour modifier l'état de la grille
+    @grille_visible.setter
+    def grille_visible(self, visible: bool):
+        # Met à jour l'attribut privé avec la nouvelle valeur
+        self.__grille_visible = visible
+        # Émet le signal pour prévenir le canvas qu'il doit se redessiner
+        self.changed.emit()
 
     # Validateur de la fonction principale entré en paramètre du constructeur
     @classmethod

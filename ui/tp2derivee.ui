@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>759</width>
-    <height>735</height>
+    <width>682</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -74,7 +74,26 @@
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="matplotlibVLayout"/>
+     <layout class="QVBoxLayout" name="matplotlibVLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     </layout>
     </item>
     <item>
      <layout class="QGridLayout" name="gridLayout_4">
@@ -154,6 +173,16 @@
                </property>
               </widget>
              </item>
+             <item row="0" column="2">
+              <widget class="QCheckBox" name="grilleBox">
+               <property name="text">
+                <string>Afficher grille</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
@@ -170,7 +199,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>759</width>
+     <width>682</width>
      <height>33</height>
     </rect>
    </property>
