@@ -33,7 +33,8 @@ class ListFonction(QAbstractListModel):
             return str(fonction_obj.fonction)
 
         elif role == Qt.ItemDataRole.ToolTipRole:
-            return f"Couleur: {fonction_obj.fonction_principale.couleur}"
+            # Récupère directement la couleur de l'objet fonction
+            return f"Couleur: {fonction_obj.couleur}"
 
         return None
 
