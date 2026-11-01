@@ -245,7 +245,7 @@ class FenetrePrincipale(QMainWindow):
 
                 # Affichage dans labelVariation
                 # Formate texte
-                texte_affiche = f"x = {valeur_x:.2f}) : {taux:.5f}"
+                texte_affiche = f"x = {valeur_x:.2f} : {taux:.5f}"
                 # Affiche label
                 self.labelVariation.setText(texte_affiche)
             # Sinon

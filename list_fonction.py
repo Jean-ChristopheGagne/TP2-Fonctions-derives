@@ -30,7 +30,7 @@ class ListFonction(QAbstractListModel):
 
         # On retourne uniquement la chaîne de caractères brute de l'expression SymPy (ex: x**2)
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
-            return str(fonction_obj.fonction_principale.fonction)
+            return str(fonction_obj.fonction)
 
         elif role == Qt.ItemDataRole.ToolTipRole:
             return f"Couleur: {fonction_obj.fonction_principale.couleur}"
@@ -60,7 +60,7 @@ class ListFonction(QAbstractListModel):
     def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         if role == Qt.ItemDataRole.EditRole and value and index.isValid():
             fx = self.__fonctions[index.row()]
-            fx.fonction_principale = str(value)
+            fx.fonction = str(value)
             self.dataChanged.emit(index, index, [role])
             return True
         return False
