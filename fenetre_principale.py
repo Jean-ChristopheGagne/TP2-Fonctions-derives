@@ -242,68 +242,68 @@ class FenetrePrincipale(QMainWindow):
             print(f"Erreur dans l'expression de la fonction ('{texte}') : {e}")
 
     # Met à jour variation
-    def mettre_a_jour_variation(self, valeur_x: float):
-        """Calcule et affiche le taux de variation, le point de tangeance pour un x donné et la dérivée dans les labels appropriés."""
-        # Try eval
+    def mettre_a_jour_variation(self, valeur_x: float):  # Aide de l'IA à certains points
+        # Calcule et affiche le taux de variation, le point de tangence et la dérivée dans les labels appropriés
         try:
             # Vérifie si la fonction dérivée existe dans le modèle
-            # Si dérivée existe
             if self.__model.fonction_derivee.fonction is not None:
-                # Utilise la méthode de la classe FonctionDerivee pour évaluer en un point
-                # Récupère dérivée
+                # Récupère l'objet dérivée
                 derivee_obj = self.__model.fonction_derivee
-                # On évalue la dérivée et on s'assure d'avoir un float
-                # Calcule taux
-                taux = float(derivee_obj.tan_un_point(valeur_x))
+                # Calcule la valeur brute de la pente en ce point
+                valeur_brute = derivee_obj.tan_un_point(valeur_x)
 
-                # Affichage dans labelVariation
-                # Formate texte
-                texte_affiche = f"x = {valeur_x:.2f} : {taux:.5f}"
-                # Affiche label
-                self.labelVariation.setText(texte_affiche)
-            # Sinon
+                # Tente de convertir en float et d'afficher
+                try:
+                    # Convertit la valeur brute en décimal float
+                    taux = float(valeur_brute)
+                    # Affiche le résultat normal dans le label (2 et 5 chiffres après la virgule)
+                    self.labelVariation.setText(f"x = {valeur_x:.2f} : {taux:.5f}")
+                # Si la conversion plante (ex: nombre complexe ou infini)
+                except:
+                    # Affiche non défini proprement dans le label
+                    self.labelVariation.setText(f"x = {valeur_x:.2f} : Non défini")
+            # Sinon, si aucune dérivée n'existe
             else:
-                # Affiche x simple
+                # Affiche juste la valeur de x
                 self.labelVariation.setText(f"x = {valeur_x}")
 
-            # Gestion du point de tangence (x, y) de la fonction principale
-            # Si principale existe
+            # Gestion du point de tangence (x, y) de la fonction principale (maintenant au bon niveau d'indentation)
             if self.__model.fonction_principale.fonction is not None:
-                # On évalue la fonction d'origine pour trouver y à partir de x
-                # Récupère expression
+                # Récupère l'expression d'origine de la fonction
                 expr_orig = self.__model.fonction_principale.fonction
-                # Calcule y
-                y_val = float(expr_orig.subs(self.__model.x(), valeur_x))
-
-                # Affichage dans labelTangeance
-                # Formate point
-                texte_tangeance = f"({valeur_x:.2f} ; {y_val:.2f})"
-                # Affiche label
-                self.labelTangeance.setText(texte_tangeance)
-            # Sinon
+                # Calcule y pour la valeur de x actuelle
+                y_brut = expr_orig.subs(self.__model.x(), valeur_x)
+                # Tente de convertir y en décimal float
+                try:
+                    # Convertit y en décimal
+                    y_val = float(y_brut)
+                    # Affiche les coordonnées (x, y) dans le label
+                    self.labelTangeance.setText(f"({valeur_x:.2f} ; {y_val:.2f})")
+                # Si la conversion de y échoue (ex: domaine invalide)
+                except:
+                    # Affiche non défini pour le point de tangence
+                    self.labelTangeance.setText(f"({valeur_x:.2f} ; Non défini)")
+            # Sinon, si pas de fonction principale
             else:
-                # Vide label
+                # Vide le label de tangence
                 self.labelTangeance.setText("")
 
-            #Affichage labelDerivee                                 #Utilisation de l'IA pour rendre l'expression propre
-            # Si dérivée existe
+            # Affichage de l'expression de la dérivée avec un formatage propre
             if self.__model.fonction_derivee.fonction is not None:
-                # Récupère dérivée brute
+                # Récupère l'expression brute de la dérivée en texte
                 expr_deriv_brute = str(derivee_obj.fonction)
-
-                # On applique le formatage joli UNIQUEMENT pour l'affichage visuel du label
+                # Applique le formatage visuel pour rendre l'expression plus jolie
                 expr_jolie = self.formater_expression_jolie(expr_deriv_brute)
-
-                # Affiche label avec la version jolie
+                # Affiche l'expression formatée dans le label de la dérivée
                 self.labelDerivee.setText(f"{expr_jolie}")
-            # Sinon
+            # Sinon, si la dérivée est vide
             else:
-                # Vide label
+                # Vide le label de la dérivée
                 self.labelDerivee.setText("")
 
-        # Saisit erreur
+        # Saisit et intercepte toute autre erreur imprévue
         except Exception as e:
-            # Print erreur
+            # Affiche l'erreur dans la console pour le débogage
             print(f"Erreur lors de la mise à jour des labels : {e}")
 
     # Ajuste limites slider
