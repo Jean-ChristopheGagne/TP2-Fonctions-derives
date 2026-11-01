@@ -2,7 +2,6 @@ from typing import override
 
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractListModel
 
-from fonction import Fonction
 from fonction_couple import FonctionCouple
 
 
