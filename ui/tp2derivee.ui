@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>759</width>
-    <height>735</height>
+    <width>755</width>
+    <height>727</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -154,6 +154,16 @@
                </property>
               </widget>
              </item>
+             <item row="0" column="2">
+              <widget class="QCheckBox" name="grilleBox">
+               <property name="text">
+                <string>Afficher grille</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
@@ -170,7 +180,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>759</width>
+     <width>755</width>
      <height>33</height>
     </rect>
    </property>

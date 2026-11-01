@@ -3,7 +3,7 @@ import sympy as sp
 from PyQt6.QtCore import QAbstractListModel, Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
-    QComboBox, QFileDialog
+    QComboBox, QFileDialog, QCheckBox
 from PyQt6.uic import loadUi
 
 from canvas import Canvas
@@ -42,6 +42,8 @@ class FenetrePrincipale(QMainWindow):
     slider: QSlider
     # Modèle liste
     __fonctionListView: QAbstractListModel
+    # CheckBox pour grille
+    grilleBox: QCheckBox
 
 
     # Init
@@ -116,6 +118,12 @@ class FenetrePrincipale(QMainWindow):
         # Connecte spin max
         self.SpinXmax.valueChanged.connect(self.ajuster_limites_slider)
 
+        # S'assure que la case de la grille est cochée par défaut au démarrage
+        self.grilleBox.setChecked(True)
+
+        # Connecte le signal de changement d'état de la grilleBox à la méthode dédiée
+        self.grilleBox.toggled.connect(self.changer_etat_grille)
+
         # Initialisation de la fenêtre dockable d'édition de fonctions
         # Crée dock
         self.editeurFonction = FenetreListFonction(parent=self)
@@ -140,6 +148,9 @@ class FenetrePrincipale(QMainWindow):
 
         # Connexion du signal personnalisé de l'éditeur vers la méthode d'ouverture de fichier
         self.editeurFonction.fichiers_clique.connect(self.ouvrir_fichier_json)
+
+        # # Appelle la méthode pour charger les fonctions depuis le JSON dès le lancement
+        # self.charger_json_au_demarrage()
 
     # Propriété modèle
     @property
@@ -271,13 +282,18 @@ class FenetrePrincipale(QMainWindow):
             else:
                 # Vide label
                 self.labelTangeance.setText("")
-                #Affichage labelDerivee
+
+            #Affichage labelDerivee                                 #Utilisation de l'IA pour rendre l'expression propre
             # Si dérivée existe
             if self.__model.fonction_derivee.fonction is not None:
-                # Récupère dérivée
-                expr_deriv = self.__model.fonction_derivee.fonction
-                # Affiche label
-                self.labelDerivee.setText(f"{expr_deriv}")
+                # Récupère dérivée brute
+                expr_deriv_brute = str(derivee_obj.fonction)
+
+                # On applique le formatage joli UNIQUEMENT pour l'affichage visuel du label
+                expr_jolie = self.formater_expression_jolie(expr_deriv_brute)
+
+                # Affiche label avec la version jolie
+                self.labelDerivee.setText(f"{expr_jolie}")
             # Sinon
             else:
                 # Vide label
@@ -331,6 +347,11 @@ class FenetrePrincipale(QMainWindow):
         # Met à jour variation
         self.mettre_a_jour_variation(valeur_x)
 
+    # Méthode appelée lorsque l'utilisateur coche ou décoche la grilleBox
+    def changer_etat_grille(self, etat: bool):
+        # Transmet l'état de la case (True/False) au modèle global
+        self.__model.grille_visible = etat
+
     # Ouvre l'explorateur de fichiers pour charger un fichier JSON de fonctions   (utilisation de l'IA)
     def ouvrir_fichier_json(self):
         """Ouvre l'explorateur de fichiers pour sélectionner un JSON et l'ajoute au modèle."""
@@ -370,3 +391,65 @@ class FenetrePrincipale(QMainWindow):
             except Exception as e:
                 # Print erreur
                 print(f"Erreur lors du chargement du fichier JSON : {e}")
+
+    def formater_expression_jolie(self, expr_str: str):          # Aide de l'IA
+        if not expr_str:
+            return ""
+
+        # Remplacement des puissances (ex: x**2 -> x² )
+        texte = expr_str.replace("**2", "²").replace("**3", "³")
+
+        # Pour les puissances générales (ex: x**4 -> x⁴)
+        remplacements_exposants = {
+            "**0": "⁰", "**1": "¹", "**2": "²", "**3": "³", "**4": "⁴",
+            "**5": "⁵", "**6": "⁶", "**7": "⁷", "**8": "⁸", "**9": "⁹"
+        }
+        #Fait l'action de remplacer "old" par "new"
+        for k, v in remplacements_exposants.items():
+            texte = texte.replace(k, v)
+
+        # Nettoyage des multiplications superflues (ex: 3*x -> 3x)
+        texte = texte.replace("*", "")
+
+        return texte
+#||||||||||||||||||||||||||||||||||||||||||||   Aide de l'IA   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+    # # Charge la liste des fonctions depuis un fichier JSON au démarrage
+    # def charger_json_au_demarrage(self, chemin_fichier="fonctions.json"):
+    #     # Importe le module os pour vérifier l'existence du fichier
+    #     import os
+    #     # Vérifie si le fichier JSON par défaut existe sur le disque
+    #     if os.path.exists(chemin_fichier):
+    #         # Ouvre le fichier en mode lecture avec l'encodage utf-8
+    #         with open(chemin_fichier, 'r', encoding='utf-8') as f:
+    #             # Charge le contenu JSON dans la variable donnees
+    #             donnees = json.load(f)
+    #         # Parcourt chaque élément contenu dans le fichier JSON
+    #         for item in donnees:
+    #             # Extrait l'expression textuelle de la fonction
+    #             expr_str = item.get("expression")
+    #             # Extrait la couleur ou utilise le bleu par défaut
+    #             couleur = item.get("couleur", "blue")
+    #             # Vérifie que l'expression n'est pas vide
+    #             if expr_str:
+    #                 # Convertit la chaîne de texte en expression SymPy
+    #                 expr = sp.sympify(expr_str)
+    #                 # Crée un nouvel objet FonctionPrincipale
+    #                 nouvelle_fonction = FonctionPrincipale(expr, couleur)
+    #                 # Ajoute la fonction au modèle de la liste
+    #                 self.editeurFonction.modele.add_item(nouvelle_fonction)
+    #
+    # # Sauvegarde la liste actuelle des fonctions dans un fichier JSON
+    # def sauvegarder_en_json(self, chemin_fichier="fonctions.json"):
+    #     # Ouvre le fichier en mode écriture avec l'encodage utf-8
+    #     with open(chemin_fichier, 'w', encoding='utf-8') as f:
+    #         # Récupère les données formatées depuis le modèle de la liste
+    #         donnees = self.editeurFonction.modele.to_json_data()
+    #         # Écrit les données dans le fichier JSON avec une indentation de 4
+    #         json.dump(donnees, f, indent=4, ensure_ascii=False)
+    #
+    # # Intercepte l'événement de fermeture de la fenêtre principale
+    # def closeEvent(self, event):
+    #     # Sauvegarde automatiquement la liste dans le fichier JSON en quittant
+    #     self.sauvegarder_en_json()
+    #     # Accepte l'événement pour fermer l'application normalement
+    #     event.accept()

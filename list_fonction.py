@@ -22,7 +22,7 @@ class ListFonction(QAbstractListModel):
 
     @override
     # Données de la cellule
-    def data(self, index, role = Qt.ItemDataRole.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < len(self.__fonctions)):
             return None
 
