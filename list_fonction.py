@@ -82,27 +82,18 @@ class ListFonction(QAbstractListModel):
             return self.__fonctions[index_row]
         return None
 
-    # Convertit la liste des fonctions en dictionnaires pour le JSON        # Aide de l'IA
+    # Convertit la liste des fonctions en dictionnaires pour le JSON
     def to_json_data(self) -> list[dict]:
-        # Initialise une liste vide pour stocker les données à sauvegarder
         data = []
-        # Vérifie si l'attribut __fonctions existe et contient des éléments
-        if hasattr(self, '_ListFonction__fonctions'):
-            # Récupère la liste interne des fonctions
-            elements = self.__fonctions
-        else:
-            # Valeur par défaut vide si l'attribut a un autre nom
-            elements = []
-        # Parcourt chaque objet fonction présent dans la liste
-        for fx in elements:
-            # Vérifie que l'objet possède bien une expression et une couleur
-            if hasattr(fx, 'fonction') and fx.fonction is not None:
-                # Ajoute un dictionnaire contenant l'expression textuelle et la couleur
-                data.append({
-                    # Convertit l'expression SymPy en chaîne de caractères
-                    "expression": str(fx.fonction),
-                    # Récupère la couleur associée à la fonction
-                    "couleur": fx.couleur if hasattr(fx, 'couleur') else "blue"
-                })
-        # Retourne la liste complète des dictionnaires prêts pour le JSON
+        # On parcourt directement la liste interne sans vérification complexe
+        for fx in self.__fonctions:
+            try:
+                if hasattr(fx,'fonction_principale') and fx.fonction_principale and fx.fonction_principale.fonction is not None:
+                    data.append({
+                        "expression": str(fx.fonction_principale.fonction),
+                        "couleur": fx.fonction_principale.couleur
+                        if hasattr(fx.fonction_principale,'couleur') else "blue"
+                    })
+            except Exception as e:
+                print(f"Erreur lors de la conversion d'un élément pour le JSON : {e}")
         return data
