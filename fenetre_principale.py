@@ -27,6 +27,8 @@ class FenetrePrincipale(QMainWindow):
     actionCouleurDerivee : QAction
     # Action éditeur
     actionEditeurFonction: QAction
+    #Action quitter
+    actionQuitter: QAction
     # Label tangence
     labelTangeance: QLabel
     # Label dérivée
@@ -112,6 +114,9 @@ class FenetrePrincipale(QMainWindow):
         # Initialisation des limites du slider en fonction des SpinBox
         # Ajuste slider
         self.ajuster_limites_slider()
+
+        # Connexion de l'action Quitter du menu au slot de fermeture
+        self.actionQuitter.triggered.connect(self.close)
 
         # Connexion des SpinBox pour réajuster le slider si l'utilisateur change les bornes
         # Connecte spin min

@@ -210,6 +210,7 @@
     <addaction name="actionCouleurOriginale"/>
     <addaction name="actionCouleurDerivee"/>
     <addaction name="actionEditeurFonction"/>
+    <addaction name="actionQuitter"/>
    </widget>
    <addaction name="menuSetting"/>
   </widget>
@@ -227,6 +228,11 @@
   <action name="actionEditeurFonction">
    <property name="text">
     <string>Éditeur de fonctions</string>
+   </property>
+  </action>
+  <action name="actionQuitter">
+   <property name="text">
+    <string>Quitter</string>
    </property>
   </action>
  </widget>
