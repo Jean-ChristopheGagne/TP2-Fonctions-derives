@@ -380,38 +380,22 @@ class FenetrePrincipale(QMainWindow):
 #||||||||||||||||||||||||||||||||||||||||||||   Aide de l'IA   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
     # Méthode commune pour importer et charger les fonctions depuis n'importe quel fichier JSON
     def importer_donnees_json(self, chemin_fichier: str):
-         # Vérifie si le fichier spécifié existe physiquement sur le disque
         if os.path.exists(chemin_fichier):
-            # Vérifie si le fichier n'est pas vide
             if os.path.getsize(chemin_fichier) > 0:
-                # Bloc try pour sécuriser la lecture et le traitement du fichier
                 try:
-                     # Ouvre le fichier en mode lecture avec l'encodage utf-8
                     with open(chemin_fichier, 'r', encoding='utf-8') as f:
-                        # Charge le contenu JSON dans la variable donnees
                         donnees = json.load(f)
 
-                    # Dictionnaire des fonctions autorisées pour que SymPy comprenne cos, sin, sqrt, etc.
-                    contexte_autorise = {
-                        'cos': sp.cos, 'sin': sp.sin, 'tan': sp.tan,
-                        'sqrt': sp.sqrt, 'log': sp.log, 'exp': sp.exp,
-                        'x': sp.Symbol('x')
-                    }
-
-                    # Parcourt chaque élément contenu dans les données JSON
                     for item in donnees:
-                        # Extrait l'expression textuelle de la fonction
                         expr_str = item.get("expression")
-                        # Extrait la couleur ou utilise le bleu par défaut
                         couleur = item.get("couleur", "blue")
-                        # Vérifie que l'expression textuelle n'est pas vide
+
                         if expr_str:
-                            # Convertit la chaîne de texte en expression SymPy valide avec le contexte sécurisé
-                            expr = sp.sympify(expr_str, locals=contexte_autorise)
-                            # Crée un nouvel objet FonctionPrincipale
-                            nouvelle_fonction = FonctionPrincipale(expr, couleur)
-                            # Ajoute la fonction au modèle de la liste
-                            self.editeurFonction.modele.add_item(nouvelle_fonction)
+                            # On crée un objet FonctionCouple en lui passant l'expression et la couleur du JSON
+                            couple = FonctionCouple(expr_str, couleur_f_princ=couleur)
+
+                            # On ajoute le couple au modèle de la liste
+                            self.editeurFonction.modele.add_item(couple)
 
                     print("Chargement du fichier JSON réussi !")
                 except Exception as e:

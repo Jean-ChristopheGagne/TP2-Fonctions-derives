@@ -28,13 +28,17 @@ class ListFonction(QAbstractListModel):
 
         fonction_obj = self.__fonctions[index.row()]
 
-        # On retourne uniquement la chaîne de caractères brute de l'expression SymPy (ex: x**2)
+        # On retourne uniquement la chaîne de caractères brute de l'expression SymPy via fonction_principale
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
-            return str(fonction_obj.fonction)
+            if hasattr(fonction_obj, 'fonction_principale') and fonction_obj.fonction_principale:
+                return str(fonction_obj.fonction_principale.fonction)
+            return ""
 
         elif role == Qt.ItemDataRole.ToolTipRole:
-            # Récupère directement la couleur de l'objet fonction
-            return f"Couleur: {fonction_obj.couleur}"
+            # Récupère directement la couleur de la fonction principale
+            if hasattr(fonction_obj, 'fonction_principale') and fonction_obj.fonction_principale:
+                return f"Couleur: {fonction_obj.fonction_principale.couleur}"
+            return "Couleur: blue"
 
         return None
 
