@@ -66,6 +66,12 @@ class ListFonction(QAbstractListModel):
             return True
         return False
 
+    # Récupère un élément par son index
+    def get_item(self, index_row: int) -> FonctionCouple | None:
+        if 0 <= index_row < len(self.__fonctions):
+            return self.__fonctions[index_row]
+        return None
+
     # Convertit la liste des fonctions en dictionnaires pour le JSON        # Aide de l'IA
     def to_json_data(self) -> list[dict]:
         # Initialise une liste vide pour stocker les données à sauvegarder
