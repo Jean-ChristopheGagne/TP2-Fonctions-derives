@@ -126,7 +126,6 @@ class FonctionCouple(QObject):
 
         # critères de valdité de l'expression
         expression_possible : bool
-        expresion_algebrique : bool
         variables_valides : bool
 
         # autres variables
