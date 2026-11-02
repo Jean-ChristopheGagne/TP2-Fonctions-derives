@@ -140,9 +140,6 @@ class FonctionCouple(QObject):
         except (sp.SympifyError, TypeError):
             return False
 
-        # vérification que l'expression est une expression algébrique
-        expression_algebrique = expr.is_algebraic_expr()
-
         # vérification de les variables sont valides
         if expr.is_constant():
             variables_valides = True
@@ -150,7 +147,7 @@ class FonctionCouple(QObject):
             variables_valides = expr.free_symbols == {x}
 
         # somme de tous les critères
-        return expression_possible and expression_algebrique and variables_valides
+        return expression_possible and variables_valides
 
     @classmethod
     def definir_fonction_principale(cls, f_str: str) -> Expr:
