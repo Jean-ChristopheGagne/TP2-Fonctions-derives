@@ -1,7 +1,6 @@
 import json
 import os
 
-import sympy as sp
 from PyQt6.QtCore import QAbstractListModel, Qt
 from PyQt6.QtGui import QAction
 from PyQt6.QtWidgets import QMainWindow, QVBoxLayout, QDoubleSpinBox, QLabel, QColorDialog, QSlider, \
@@ -12,7 +11,6 @@ from canvas import Canvas
 from fenetre_list_fonction import FenetreListFonction
 from fonction_couple import FonctionCouple
 from fonction_derivee import FonctionDerivee
-from fonction_principale import FonctionPrincipale
 
 
 class FenetrePrincipale(QMainWindow):
@@ -216,29 +214,36 @@ class FenetrePrincipale(QMainWindow):
 
     # Change fonction par index
     def changement_fonction_par_index(self, index: int):
-        """Récupère la fonction sélectionnée dans le ComboBox via son index et l'applique au modèle."""
-        # Vérifie si l'index sélectionné est valide
+        """Récupère la fonction sélectionnée dans le ComboBox via son index et l'applique."""
         if index >= 0:
-            # Bloc try pour sécuriser
             try:
-                # Récupère l'objet FonctionPrincipale via get_item
-                fonction_obj = self.editeurFonction.modele.get_item(index)
+                # Récupère l'objet FonctionCouple sélectionné dans la liste
+                couple_obj = self.editeurFonction.modele.get_item(index)
 
-                # Vérifie si l'objet et sa fonction existent
-                if fonction_obj and hasattr(fonction_obj, 'fonction') and fonction_obj.fonction is not None:
-                    # Convertit l'expression SymPy en texte brut
-                    expr_str = str(fonction_obj.fonction)
+                if couple_obj:
+                    # On met à jour le modèle global de la fenêtre principale
+                    self.__model = couple_obj
 
-                    # Transmet la chaîne de caractères au modèle global
-                    self.__model.changer_fonction_principale(expr_str)
+                    # On met à jour le modèle du canvas
+                    self.__canvas.set_model(couple_obj)
+
+                    # On reconnecte les signaux de ce nouveau couple pour rafraîchir le canvas et les labels automatiquement
+                    try:
+                        couple_obj.changed.disconnect(self.__canvas.dessiner)
+                        couple_obj.changed.disconnect(self.actualiser_labels_par_defaut)
+                    except TypeError:
+                        pass
+
+                    couple_obj.changed.connect(self.__canvas.dessiner)
+                    couple_obj.changed.connect(self.actualiser_labels_par_defaut)
+
+                    # Force le redessin et la mise à jour des labels
+                    self.__canvas.dessiner()
+                    self.actualiser_labels_par_defaut()
 
                     # Remet le style normal du ComboBox
                     self.fonctionEdit.setStyleSheet("")
 
-                    # Redessine le canvas
-                    self.__canvas.dessiner()
-
-            # Capture les erreurs
             except Exception as e:
                 self.fonctionEdit.setStyleSheet("background-color: #ffcccc;")
                 print(f"Erreur lors du changement de fonction par index : {e}")

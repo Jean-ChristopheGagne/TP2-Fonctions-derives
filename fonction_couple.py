@@ -157,8 +157,15 @@ class FonctionCouple(QObject):
         """
         if f_str is None or str(f_str).strip() == "":
             return sp.Integer(0)
+
+        contexte_autorise = {
+            'cos': sp.cos, 'sin': sp.sin, 'tan': sp.tan,
+            'sqrt': sp.sqrt, 'log': sp.log, 'exp': sp.exp,
+            'x': sp.symbols('x')
+        }
         if cls.valider_fonction(f_str):
-            return Expr(sp.sympify(f_str))
+            # On retourne directement le résultat de sympify
+            return sp.sympify(f_str, locals=contexte_autorise)
         else:
             raise ValueError("Expression invalide")
 
@@ -183,7 +190,8 @@ class FonctionCouple(QObject):
         couleur_princ = self.fonction_principale.couleur
         self.fonction_principale = FonctionPrincipale(FonctionCouple.definir_fonction_principale(f_str), couleur_princ)
 
-    # Cette méthode valide que les couleurs de la fonction principale et de la fonction dérivée ne soient pas équivalentes
+    # Cette méthode valide que les couleurs de la fonction principale et de la fonction dérivée ne soient pas équivalentes (si on le veut)
     def valider_couleurs_fonction(self):
-        if self.fonction_principale.couleur == self.fonction_derivee.couleur:
-            raise ValueError("Couleurs de la fonction principale et de la fonction dérivée équivalentes")
+        # if self.fonction_principale.couleur == self.fonction_derivee.couleur:
+        #     raise ValueError("Couleurs de la fonction principale et de la fonction dérivée équivalentes")
+        pass

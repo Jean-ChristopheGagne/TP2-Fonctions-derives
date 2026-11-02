@@ -27,6 +27,11 @@ class Canvas(FigureCanvasQTAgg):
         # Dessine
         self.dessiner()
 
+    def set_model(self, nouveau_modele: FonctionCouple):
+        """Met à jour le modèle affiché par le canvas et redessine."""
+        self.__model = nouveau_modele
+        self.dessiner()
+
     # Méthode dessin
     def dessiner(self):
         # Efface axe 0

@@ -3,6 +3,7 @@ from typing import override
 from PyQt6.QtCore import QModelIndex, Qt, QAbstractListModel
 
 from fonction_couple import FonctionCouple
+from fonction_principale import FonctionPrincipale
 
 
 class ListFonction(QAbstractListModel):
@@ -65,9 +66,14 @@ class ListFonction(QAbstractListModel):
     def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         if role == Qt.ItemDataRole.EditRole and value and index.isValid():
             fx = self.__fonctions[index.row()]
-            fx.fonction = str(value)
-            self.dataChanged.emit(index, index, [role])
-            return True
+            try:
+                # Met à jour l'expression de la fonction principale via le constructeur d'expression
+                new_expr = FonctionCouple.definir_fonction_principale(str(value))
+                fx.fonction_principale = FonctionPrincipale(new_expr, fx.fonction_principale.couleur)
+                self.dataChanged.emit(index, index, [role])
+                return True
+            except Exception:
+                return False
         return False
 
     # Récupère un élément par son index

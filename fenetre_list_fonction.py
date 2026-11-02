@@ -3,7 +3,7 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QDockWidget, QMessageBox
 from PyQt6.uic import loadUi
 
-from fonction_principale import FonctionPrincipale
+from fonction_couple import FonctionCouple
 from list_fonction import ListFonction
 
 class FenetreListFonction(QDockWidget):
@@ -107,11 +107,12 @@ class FenetreListFonction(QDockWidget):
 
             # Vérifie si c'est un nombre constant ou si l'expression contient 'x'
             if not expr.is_number and x_sym not in expr.free_symbols:
+                self.ajouter.setEnabled(False)
                 return QMessageBox.warning(self, "Erreur","L'expression doit être un nombre constant ou contenir la variable 'x'.")
 
             # Si tout est valide, crée l'objet et l'ajoute à la liste
-            nouvelle_fonction = FonctionPrincipale(expr, "blue")
-            self.modele.add_item(nouvelle_fonction)
+            nouvel_element = FonctionCouple(texte_saisi, couleur_f_princ="blue")
+            self.modele.add_item(nouvel_element)
 
             # Vide le champ après l'ajout réussi
             self.lineEdit.clear()
