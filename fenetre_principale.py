@@ -91,13 +91,13 @@ class FenetrePrincipale(QMainWindow):
         self.SpinXmax.setValue(10.0)
         # Permettre aux SpinBox d'accepter des nombres négatifs
         # Min min
-        self.SpinXmin.setMinimum(-10.0)
+        self.SpinXmin.setMinimum(-500.0)
         # Min max
-        self.SpinXmin.setMaximum(10.0)
+        self.SpinXmin.setMaximum(500.0)
         # Max min
-        self.SpinXmax.setMinimum(-10.0)
+        self.SpinXmax.setMinimum(-500.0)
         # Max max
-        self.SpinXmax.setMaximum(10.0)
+        self.SpinXmax.setMaximum(500.0)
         # Connecte min
         self.SpinXmin.valueChanged.connect(self.changement_Xmin)
         # Connecte max
@@ -133,7 +133,6 @@ class FenetrePrincipale(QMainWindow):
         # affiche le dock widget à droite
         # Ajoute dock
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.editeurFonction)
-        #Instanciation en premier de la fenêtre dockable d'édition de fonctions
 
         # S'assurer qu'il est bien visible à l'instanciation et connecter l'action du menu
         # Rend visible
@@ -147,7 +146,7 @@ class FenetrePrincipale(QMainWindow):
         # Assigne ComboBox
         self.fonctionEdit.setModel(self.__fonctionListView)
         # Connecte texte
-        self.fonctionEdit.currentTextChanged.connect(self.changement_fonction)
+        self.fonctionEdit.currentIndexChanged.connect(self.changement_fonction_par_index)
 
         # Connexion du signal personnalisé de l'éditeur vers la méthode d'ouverture de fichier
         self.editeurFonction.fichiers_clique.connect(self.ouvrir_fichier_json)
@@ -215,22 +214,34 @@ class FenetrePrincipale(QMainWindow):
         # Assigne modèle
         self.__model.x_max = valeur
 
-    # Change fonction
-    def changement_fonction(self, texte: str):
-        """Récupère le texte de l'input, le convertit en SymPy et redessine."""
-        # Try convert
-        try:
-            self.__model.changer_fonction_principale(texte)
-            # Style normal
-            self.fonctionEdit.setStyleSheet("")
-            # Redessine
-            self.__canvas.dessiner()
-        # Saisit erreur
-        except Exception as e:
-            # Style rouge
-            self.fonctionEdit.setStyleSheet("background-color: #ffcccc;")
-            # Print erreur
-            print(f"Erreur dans l'expression de la fonction ('{texte}') : {e}")
+    # Change fonction par index
+    def changement_fonction_par_index(self, index: int):
+        """Récupère la fonction sélectionnée dans le ComboBox via son index et l'applique au modèle."""
+        # Vérifie si l'index sélectionné est valide
+        if index >= 0:
+            # Bloc try pour sécuriser
+            try:
+                # Récupère l'objet FonctionPrincipale via get_item
+                fonction_obj = self.editeurFonction.modele.get_item(index)
+
+                # Vérifie si l'objet et sa fonction existent
+                if fonction_obj and hasattr(fonction_obj, 'fonction') and fonction_obj.fonction is not None:
+                    # Convertit l'expression SymPy en texte brut
+                    expr_str = str(fonction_obj.fonction)
+
+                    # Transmet la chaîne de caractères au modèle global
+                    self.__model.changer_fonction_principale(expr_str)
+
+                    # Remet le style normal du ComboBox
+                    self.fonctionEdit.setStyleSheet("")
+
+                    # Redessine le canvas
+                    self.__canvas.dessiner()
+
+            # Capture les erreurs
+            except Exception as e:
+                self.fonctionEdit.setStyleSheet("background-color: #ffcccc;")
+                print(f"Erreur lors du changement de fonction par index : {e}")
 
     # Met à jour variation
     def mettre_a_jour_variation(self, valeur_x: float):  # Aide de l'IA à certains points
@@ -369,34 +380,42 @@ class FenetrePrincipale(QMainWindow):
 #||||||||||||||||||||||||||||||||||||||||||||   Aide de l'IA   |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
     # Méthode commune pour importer et charger les fonctions depuis n'importe quel fichier JSON
     def importer_donnees_json(self, chemin_fichier: str):
-        # Vérifie si le fichier spécifié existe physiquement sur le disque
+         # Vérifie si le fichier spécifié existe physiquement sur le disque
         if os.path.exists(chemin_fichier):
-            # Bloc try pour sécuriser la lecture et le traitement du fichier
-            try:
-                # Ouvre le fichier en mode lecture avec l'encodage utf-8
-                with open(chemin_fichier, 'r', encoding='utf-8') as f:
-                    # Charge le contenu JSON dans la variable donnees
-                    donnees = json.load(f)
-                # Parcourt chaque élément contenu dans les données JSON
-                for item in donnees:
-                    # Extrait l'expression textuelle de la fonction
-                    expr_str = item.get("expression")
-                    # Extrait la couleur ou utilise le bleu par défaut
-                    couleur = item.get("couleur", "blue")
-                    # Vérifie que l'expression textuelle n'est pas vide
-                    if expr_str:
-                        # Convertit la chaîne de texte en expression SymPy valide
-                        expr = sp.sympify(expr_str)
-                        # Crée un nouvel objet FonctionPrincipale
-                        nouvelle_fonction = FonctionPrincipale(expr, couleur)
-                        # Ajoute la fonction au modèle de la liste
-                        self.editeurFonction.modele.add_item(nouvelle_fonction)
-                # Affiche un message de succès dans la console
-                print("Chargement du fichier JSON réussi !")
-            # Capture les erreurs en cas de problème de lecture ou de format
-            except Exception as e:
-                # Affiche l'erreur détaillée dans la console
-                print(f"Erreur lors du chargement du fichier JSON : {e}")
+            # Vérifie si le fichier n'est pas vide
+            if os.path.getsize(chemin_fichier) > 0:
+                # Bloc try pour sécuriser la lecture et le traitement du fichier
+                try:
+                     # Ouvre le fichier en mode lecture avec l'encodage utf-8
+                    with open(chemin_fichier, 'r', encoding='utf-8') as f:
+                        # Charge le contenu JSON dans la variable donnees
+                        donnees = json.load(f)
+
+                    # Dictionnaire des fonctions autorisées pour que SymPy comprenne cos, sin, sqrt, etc.
+                    contexte_autorise = {
+                        'cos': sp.cos, 'sin': sp.sin, 'tan': sp.tan,
+                        'sqrt': sp.sqrt, 'log': sp.log, 'exp': sp.exp,
+                        'x': sp.Symbol('x')
+                    }
+
+                    # Parcourt chaque élément contenu dans les données JSON
+                    for item in donnees:
+                        # Extrait l'expression textuelle de la fonction
+                        expr_str = item.get("expression")
+                        # Extrait la couleur ou utilise le bleu par défaut
+                        couleur = item.get("couleur", "blue")
+                        # Vérifie que l'expression textuelle n'est pas vide
+                        if expr_str:
+                            # Convertit la chaîne de texte en expression SymPy valide avec le contexte sécurisé
+                            expr = sp.sympify(expr_str, locals=contexte_autorise)
+                            # Crée un nouvel objet FonctionPrincipale
+                            nouvelle_fonction = FonctionPrincipale(expr, couleur)
+                            # Ajoute la fonction au modèle de la liste
+                            self.editeurFonction.modele.add_item(nouvelle_fonction)
+
+                    print("Chargement du fichier JSON réussi !")
+                except Exception as e:
+                    print(f"Erreur lors du chargement du fichier JSON : {e}")
 
     # Charge la liste des fonctions depuis le dossier fichiersJSON au démarrage
     def charger_json_au_demarrage(self, chemin_fichier="fichiersJSON/fonctions.json"):

@@ -122,47 +122,56 @@ class FonctionCouple(QObject):
     @classmethod
     def valider_fonction(cls, f_str: str) -> bool:
         if f_str is None or str(f_str).strip() == "":
-            return True  # On autorise les valeurs vides au démarrage
+             return True  # On autorise les valeurs vides au démarrage
 
-        # critères de valdité de l'expression
-        expression_possible : bool
-        expresion_algebrique : bool
-        variables_valides : bool
+        # critères de validité de l'expression
+        expression_possible: bool
+        variables_valides: bool
 
         # autres variables
         x = sp.symbols('x')
-        expr : Expr
+        expr: Expr
 
-        # vérification de la possibilité d'une expression
+        # vérification de la possibilité d'une expression (avec contexte pour sin, cos, exp, sqrt, etc.)
         try:
-            expr = Expr(sp.sympify(f_str))
+            contexte_autorise = {
+                'cos': sp.cos, 'sin': sp.sin, 'tan': sp.tan,
+                'sqrt': sp.sqrt, 'log': sp.log, 'exp': sp.exp,
+                'x': x
+            }
+            expr = sp.sympify(f_str, locals=contexte_autorise)
             expression_possible = True
         except (sp.SympifyError, TypeError):
             return False
 
-        # vérification que l'expression est une expression algébrique
-        expression_algebrique = expr.is_algebraic_expr()
-
-        # vérification de les variables sont valides
+        # vérification que les variables sont valides
         if expr.is_constant():
             variables_valides = True
         else:
             variables_valides = expr.free_symbols == {x}
 
-        # somme de tous les critères
-        return expression_possible and expression_algebrique and variables_valides
+        # Retourne le tout (on a retiré la restriction algébrique stricte pour laisser passer sin, cos, exp...)
+        return expression_possible and variables_valides
 
     @classmethod
     def definir_fonction_principale(cls, f_str: str) -> Expr:
         """
-        Cette méthode définit la fonction principale entré en paramètre du constructeur
-        :param f_str: la chaine de la fonction entré en paramètre
-        :return: la fonction principale en forme d'expresion
+        Cette méthode définit la fonction principale entrée en paramètre du constructeur
+        :param f_str: la chaine de la fonction entrée en paramètre
+        :return: la fonction principale en forme d'expression SymPy
         """
         if f_str is None or str(f_str).strip() == "":
             return sp.Integer(0)
+
+        contexte_autorise = {
+            'cos': sp.cos, 'sin': sp.sin, 'tan': sp.tan,
+            'sqrt': sp.sqrt, 'log': sp.log, 'exp': sp.exp,
+            'x': sp.symbols('x')
+        }
+
         if cls.valider_fonction(f_str):
-            return Expr(sp.sympify(f_str))
+            # On retourne directement l'expression SymPy sans l'envelopper dans Expr()
+            return sp.sympify(f_str, locals=contexte_autorise)
         else:
             raise ValueError("Expression invalide")
 
